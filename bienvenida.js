@@ -12,9 +12,13 @@
   "use strict";
 
   const forceAnim = /[?&]bienvenida=anim/.test(location.search);
-  // Con "reducir movimiento" no se anula la bienvenida: se muestra en versión calma (cada escena aparece con un fundido, sin movimientos).
-  const calm = window.matchMedia("(prefers-reduced-motion: reduce)").matches && !forceAnim;
-  const reduce = calm; // solo para el desplazamiento suave al cerrar
+  // La bienvenida SIEMPRE se muestra con movimiento (es el momento de apertura y tiene botón para saltarla).
+  // Quien prefiere menos movimiento lo elige con el botón "Reducir movimiento"; la elección se recuerda.
+  const osReduce = window.matchMedia("(prefers-reduced-motion: reduce)").matches;
+  function savedCalm() { try { return localStorage.getItem("bf-calma") === "1"; } catch (e) { return false; } }
+  function saveCalm(v) { try { localStorage.setItem("bf-calma", v ? "1" : "0"); } catch (e) { /* sin almacenamiento */ } }
+  let calm = savedCalm() && !forceAnim;
+  const reduce = osReduce && !forceAnim; // solo para el desplazamiento suave al cerrar
   const START = new Date("2027-04-09T11:00:00-03:00").getTime();
   const G = "assets/graficas/";
   const T = "assets/texturas/";
@@ -40,7 +44,7 @@
 
   const forced = /[?&]bienvenida\b/.test(location.search);
   const dlg = document.createElement("dialog");
-  dlg.className = "welcome" + (forceAnim || calm ? " force-anim" : "") + (calm ? " calm" : "");
+  dlg.className = "welcome force-anim" + (calm ? " calm" : "");
   dlg.setAttribute("aria-labelledby", "w-title");
 
   const days = Math.max(0, Math.ceil((START - Date.now()) / 864e5));
@@ -83,6 +87,7 @@
           </div>
         </div>
       </div>
+      <button type="button" class="welcome__calm" data-calm aria-pressed="${calm}">${calm ? "Activar movimiento" : "Reducir movimiento"}</button>
       <button type="button" class="welcome__close" data-close>Saltar <span aria-hidden="true">›</span></button>
     </div>`;
   dlg.style.setProperty("--scene", SCENE + "s");
@@ -138,6 +143,18 @@
     if (reduce) done(); else window.setTimeout(done, 380);
   }
 
+  const calmBtn = dlg.querySelector("[data-calm]");
+  calmBtn.addEventListener("click", () => {
+    calm = !calm;
+    saveCalm(calm);
+    dlg.classList.toggle("calm", calm);
+    calmBtn.setAttribute("aria-pressed", String(calm));
+    calmBtn.textContent = calm ? "Activar movimiento" : "Reducir movimiento";
+    // reinicia la secuencia en el modo elegido
+    window.clearTimeout(timer);
+    ready = false;
+    play();
+  });
   close.addEventListener("click", skip);
   dlg.querySelectorAll("[data-go]").forEach((b) => b.addEventListener("click", () => shut(b.dataset.go)));
   dlg.addEventListener("cancel", (e) => { e.preventDefault(); skip(); });

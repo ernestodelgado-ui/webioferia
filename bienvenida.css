@@ -212,3 +212,12 @@
 .welcome.calm.is-final .welcome__final, .welcome.calm.is-skip .welcome__final { opacity: 1; animation: none !important; }
 .welcome.calm .wf__chip, .welcome.calm .wf__w, .welcome.calm .wf__text, .welcome.calm .wf__dots, .welcome.calm .wf__meta, .welcome.calm .wf__actions, .welcome.calm .wf__tex { animation: none !important; }
 .welcome.calm.is-skip .flood { visibility: hidden; opacity: 0; animation: none !important; }
+
+/* botón para elegir menos movimiento, arriba a la izquierda */
+.welcome__calm {
+  position: absolute; z-index: 10; top: max(16px, env(safe-area-inset-top, 0px)); left: max(16px, env(safe-area-inset-left, 0px));
+  min-height: 40px; padding: 0 16px; border: 0; cursor: pointer; font: inherit; font-weight: 700; font-size: .85rem;
+  background: #FFFFFFE6; color: var(--ink); clip-path: polygon(0 0, calc(100% - 10px) 0, 100% 10px, 100% 100%, 10px 100%, 0 calc(100% - 10px)); transition: transform .2s;
+}
+.welcome__calm:hover { transform: translateY(-2px); }
+.welcome__calm:focus-visible { outline: 3px solid var(--ink); outline-offset: 3px; }
