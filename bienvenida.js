@@ -12,7 +12,9 @@
   "use strict";
 
   const forceAnim = /[?&]bienvenida=anim/.test(location.search);
-  const reduce = window.matchMedia("(prefers-reduced-motion: reduce)").matches && !forceAnim;
+  // Con "reducir movimiento" no se anula la bienvenida: se muestra en versión calma (cada escena aparece con un fundido, sin movimientos).
+  const calm = window.matchMedia("(prefers-reduced-motion: reduce)").matches && !forceAnim;
+  const reduce = calm; // solo para el desplazamiento suave al cerrar
   const START = new Date("2027-04-09T11:00:00-03:00").getTime();
   const G = "assets/graficas/";
   const T = "assets/texturas/";
@@ -38,7 +40,7 @@
 
   const forced = /[?&]bienvenida\b/.test(location.search);
   const dlg = document.createElement("dialog");
-  dlg.className = "welcome" + (forceAnim ? " force-anim" : "");
+  dlg.className = "welcome" + (forceAnim || calm ? " force-anim" : "") + (calm ? " calm" : "");
   dlg.setAttribute("aria-labelledby", "w-title");
 
   const days = Math.max(0, Math.ceil((START - Date.now()) / 864e5));
@@ -95,16 +97,25 @@
     close.innerHTML = 'Cerrar <span aria-hidden="true">×</span>';
   }
 
-  function open() {
-    mark();
-    document.documentElement.classList.add("welcome-open");
-    dlg.showModal();
-    if (reduce) { dlg.classList.add("is-skip"); finish(); return; }
-    // fuerza el reinicio de las animaciones
+  // 1) abrir de inmediato (pantalla de color, nada de la página detrás) y 2) arrancar la secuencia cuando las piezas estén cargadas.
+  let ready = false;
+  function play() {
+    if (ready) return;
+    ready = true;
     dlg.classList.remove("is-playing", "is-final", "is-skip");
     void dlg.offsetWidth;
     dlg.classList.add("is-playing");
     timer = window.setTimeout(finish, (FINAL_AT + 0.9) * 1000);
+  }
+  function open() {
+    mark();
+    ready = false;
+    document.documentElement.classList.add("welcome-open");
+    if (!dlg.open) dlg.showModal();
+    document.documentElement.classList.remove("welcome-pending");
+    // arranca cuando están las imágenes, o a más tardar a los 1,6 s aunque la conexión sea lenta
+    const wait = new Promise((res) => window.setTimeout(res, 1600));
+    Promise.race([preloaded, wait]).then(play);
   }
 
   function skip() {
@@ -142,9 +153,8 @@
 
   // precarga de las imágenes de la secuencia para que no entren tarde
   const pre = [...new Set(steps.flatMap((s) => s.layers.map((l) => l[0]).concat([s.palabra])).concat([G + "criatura-flores.webp", G + "criatura-ramas.webp"]))];
-  Promise.all(pre.map((src) => new Promise((res) => { const i = new Image(); i.onload = i.onerror = res; i.src = src; })))
-    .then(() => {
-      if (!forced && (seen() || location.hash)) return;
-      window.setTimeout(open, 350);
-    });
+  const preloaded = Promise.all(pre.map((src) => new Promise((res) => { const i = new Image(); i.onload = i.onerror = res; i.src = src; })));
+  // se abre ya mismo, sin esperar la carga: lo primero que se ve es la bienvenida
+  if (!forced && (seen() || location.hash)) document.documentElement.classList.remove("welcome-pending");
+  else open();
 })();

@@ -196,3 +196,19 @@
 }
 /* HACER: la trama de fondo más suave, para que el rojo siga siendo rojo */
 .l-tex--ink { opacity: .26; filter: grayscale(1) contrast(1.2) brightness(1.3); }
+
+/* =========================================================
+   VERSIÓN CALMA · para quien tiene "reducir movimiento"
+   Cada escena aparece con un fundido suave y queda quieta: sin cortinas, vuelos, giros ni rebotes.
+   ========================================================= */
+@keyframes calm-in { from { opacity: 0; } to { opacity: 1; } }
+.welcome.calm .flood { clip-path: none; opacity: 0; }
+.welcome.calm.is-playing .flood { animation: calm-in .6s ease var(--t) forwards !important; }
+.welcome.calm .flood *, .welcome.calm .flood *::before { animation: none !important; transition: none !important; }
+.welcome.calm .flood__world { transform: none !important; }
+.welcome.calm .layer { animation: none !important; }
+.welcome.calm .welcome__final { clip-path: none; opacity: 0; }
+.welcome.calm.is-playing .welcome__final { animation: calm-in .7s ease var(--final-at) forwards !important; }
+.welcome.calm.is-final .welcome__final, .welcome.calm.is-skip .welcome__final { opacity: 1; animation: none !important; }
+.welcome.calm .wf__chip, .welcome.calm .wf__w, .welcome.calm .wf__text, .welcome.calm .wf__dots, .welcome.calm .wf__meta, .welcome.calm .wf__actions, .welcome.calm .wf__tex { animation: none !important; }
+.welcome.calm.is-skip .flood { visibility: hidden; opacity: 0; animation: none !important; }
