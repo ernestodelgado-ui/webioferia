@@ -1,0 +1,198 @@
+/* =========================================================
+   BIENVENIDA · "Activemos el cambio"
+   Mini video con las piezas de la marca (criaturas, texturas, lettering), sin confeti ni formas ajenas.
+   Cinco escenas, una por verbo. Cada escena arranca en --t = .2s + índice × --scene y cada pieza
+   sigue moviéndose mientras la próxima escena la tapa. La tarjeta final se abre en --final-at.
+   ========================================================= */
+
+.welcome-open { overflow: hidden; }
+.welcome {
+  --scene: 1.25s; --final-at: 6.45s;
+  border: 0; padding: 0; margin: 0; width: 100vw; max-width: none; height: 100vh; height: 100dvh; max-height: none;
+  background: #0B0B0B; color: var(--white); overflow: hidden; opacity: 1; transition: opacity .35s;
+}
+.welcome::backdrop { background: #0B0B0B; }
+.welcome.is-leaving { opacity: 0; }
+.welcome__stage { position: relative; width: 100%; height: 100%; overflow: hidden; }
+
+/* ---------- escenas: cortina de papel rasgado que barre la pantalla ---------- */
+.welcome__floods { position: absolute; inset: 0; }
+.flood {
+  --t: calc(.2s + var(--i) * var(--scene));
+  position: absolute; inset: 0; display: grid; place-items: center; overflow: hidden; color: var(--white);
+  clip-path: polygon(-60% 0, -50% 0, -58% 10%, -47% 20%, -59% 30%, -48% 40%, -57% 50%, -46% 60%, -58% 70%, -49% 80%, -59% 90%, -47% 100%, -60% 100%);
+}
+.flood.bg-amarillo { color: var(--ink); }
+.welcome.is-playing .flood.wipe-l { animation: wipe-l .8s cubic-bezier(.65, 0, .25, 1) var(--t) forwards; }
+.welcome.is-playing .flood.wipe-r { animation: wipe-r .8s cubic-bezier(.65, 0, .25, 1) var(--t) forwards; }
+@keyframes wipe-l { to { clip-path: polygon(-60% 0, 152% 0, 144% 10%, 156% 20%, 143% 30%, 155% 40%, 145% 50%, 157% 60%, 146% 70%, 154% 80%, 144% 90%, 156% 100%, -60% 100%); } }
+.flood.wipe-r { clip-path: polygon(160% 0, 150% 0, 158% 10%, 147% 20%, 159% 30%, 148% 40%, 157% 50%, 146% 60%, 158% 70%, 149% 80%, 159% 90%, 147% 100%, 160% 100%); }
+@keyframes wipe-r { to { clip-path: polygon(160% 0, -52% 0, -44% 10%, -56% 20%, -43% 30%, -55% 40%, -45% 50%, -57% 60%, -46% 70%, -54% 80%, -44% 90%, -56% 100%, 160% 100%); } }
+.welcome.is-skip .flood { animation: none !important; visibility: hidden; }
+
+/* el mundo de cada escena hace un travelling lento, como una cámara */
+.flood__world { position: absolute; inset: 0; overflow: hidden; }
+.welcome.is-playing .flood__world { animation: camara 3.4s cubic-bezier(.2, .6, .3, 1) var(--t) both; }
+@keyframes camara { from { transform: scale(1.14) rotate(.6deg); } to { transform: scale(1) rotate(0deg); } }
+.layer { position: absolute; max-width: none; pointer-events: none; user-select: none; will-change: transform; }
+
+/* cartel gigante del verbo en contorno, corre detrás */
+.flood__marquee { position: absolute; z-index: 0; left: 0; right: 0; top: 50%; translate: 0 -50%; overflow: hidden; pointer-events: none; opacity: .3; }
+.flood__marquee span { display: inline-block; white-space: nowrap; font-size: clamp(8rem, 46vh, 26rem); font-weight: 900; line-height: .85; letter-spacing: -.05em; text-transform: uppercase; color: transparent; -webkit-text-stroke: 2px #fff; }
+.flood.bg-amarillo .flood__marquee span { -webkit-text-stroke-color: #0B0B0B; }
+.welcome.is-playing .flood__marquee span { animation: marquee 7s linear var(--t) forwards; }
+.flood.wipe-r .flood__marquee span { animation-direction: reverse; }
+@keyframes marquee { from { transform: translateX(0); } to { transform: translateX(-45%); } }
+
+/* texturas de fondo en movimiento */
+.l-tex { inset: -12%; width: 124%; height: 124%; object-fit: cover; }
+.l-tex--ink { mix-blend-mode: multiply; filter: grayscale(1) contrast(1.3) brightness(1.15); opacity: .5; }
+.l-tex--screen { mix-blend-mode: screen; filter: grayscale(1) contrast(1.4); opacity: .22; }
+.l-tex--drift { inset: 0; width: 170%; height: auto; object-fit: contain; opacity: .38; left: -10%; top: 4%; }
+.welcome.is-playing .l-tex { animation: pan 7s linear var(--t) forwards; }
+@keyframes pan { from { translate: 0 0; } to { translate: -7% -5%; } }
+
+/* HACER · las flores crecen y se mecen */
+.l-flor { height: 92%; width: auto; mix-blend-mode: multiply; }
+.l-flor--a { right: -4%; bottom: -6%; transform-origin: 70% 100%; }
+.l-flor--b { left: -12%; bottom: -16%; height: 64%; transform: scaleX(-1); transform-origin: 30% 100%; opacity: .9; }
+.welcome.is-playing .l-flor--a { animation: crecer 1.15s cubic-bezier(.2, 1.1, .3, 1) var(--t) backwards, mecer 3.2s ease-in-out calc(var(--t) + 1.15s) infinite alternate; }
+.welcome.is-playing .l-flor--b { animation: crecer 1.2s cubic-bezier(.2, 1.1, .3, 1) calc(var(--t) + .25s) backwards, mecer 3.6s ease-in-out calc(var(--t) + 1.45s) infinite alternate-reverse; }
+@keyframes crecer { from { scale: .12; rotate: -14deg; opacity: 0; } }
+@keyframes mecer { from { rotate: -2.5deg; } to { rotate: 2.5deg; } }
+.l-spin { width: min(24vw, 260px); height: auto; }
+.l-spin--a { left: 5%; top: 7%; }
+.l-spin--b { right: -4%; top: -6%; width: min(34vw, 420px); filter: brightness(2) saturate(.15); opacity: .7; }
+.welcome.is-playing .l-spin { animation: pop-spin .9s cubic-bezier(.2, 1.5, .4, 1) calc(var(--t) + .3s) backwards, girar 9s linear calc(var(--t) + .3s) infinite; }
+@keyframes pop-spin { from { scale: 0; opacity: 0; } }
+@keyframes girar { to { rotate: 360deg; } }
+
+/* CONECTAR · las libélulas cruzan la pantalla con su rumbo */
+.l-fly { height: auto; }
+.l-fly--a { width: min(50vw, 560px); left: -30%; bottom: -14%; rotate: -28deg; }
+.l-fly--b { width: min(28vw, 320px); right: -22%; top: 62%; rotate: 205deg; }
+.l-fly--c { width: min(16vw, 200px); left: 34%; bottom: -24%; rotate: -8deg; }
+.welcome.is-playing .l-fly--a { animation: vuelo-a 3.2s cubic-bezier(.3, .55, .4, 1) var(--t) forwards; }
+.welcome.is-playing .l-fly--b { animation: vuelo-b 3s cubic-bezier(.3, .55, .4, 1) calc(var(--t) + .3s) forwards; }
+.welcome.is-playing .l-fly--c { animation: vuelo-c 2.8s cubic-bezier(.3, .55, .4, 1) calc(var(--t) + .55s) forwards; }
+@keyframes vuelo-a { 0% { translate: 0 0; rotate: -28deg; } 55% { rotate: -10deg; } 100% { translate: 150vw -85vh; rotate: 14deg; } }
+@keyframes vuelo-b { 0% { translate: 0 0; rotate: 205deg; } 60% { rotate: 190deg; } 100% { translate: -150vw -60vh; rotate: 178deg; } }
+@keyframes vuelo-c { 0% { translate: 0 0; rotate: -8deg; } 100% { translate: 40vw -120vh; rotate: 16deg; } }
+
+/* TRANSFORMAR · el caracol gira y se abre */
+.l-nau { height: auto; mix-blend-mode: screen; }
+.l-nau--a { width: min(120vw, 1300px); right: -34%; top: -26%; transform: scaleX(-1); }
+.l-nau--b { width: min(52vw, 560px); left: -14%; bottom: -12%; opacity: .85; }
+.welcome.is-playing .l-nau--a { animation: nau-a 3.6s cubic-bezier(.2, .8, .3, 1) var(--t) both; }
+.welcome.is-playing .l-nau--b { animation: nau-b 3.6s cubic-bezier(.2, .8, .3, 1) calc(var(--t) + .2s) both; }
+@keyframes nau-a { from { scale: .55; rotate: -40deg; opacity: 0; } to { scale: 1.08; rotate: 22deg; opacity: 1; } }
+@keyframes nau-b { from { scale: .4; rotate: 50deg; opacity: 0; } to { scale: 1; rotate: -18deg; opacity: .85; } }
+
+/* CUIDAR · las ramas brotan desde abajo */
+.l-grow { width: auto; mix-blend-mode: multiply; }
+.l-grow--a { left: -6%; bottom: -12%; height: 112%; transform-origin: 50% 100%; opacity: .75; }
+.l-grow--b { right: -10%; bottom: -18%; height: 92%; transform: scaleX(-1); transform-origin: 50% 100%; opacity: .6; }
+.welcome.is-playing .l-grow--a { animation: brotar 1.5s cubic-bezier(.2, .9, .3, 1) var(--t) backwards, mecer 4s ease-in-out calc(var(--t) + 1.5s) infinite alternate; }
+.welcome.is-playing .l-grow--b { animation: brotar 1.6s cubic-bezier(.2, .9, .3, 1) calc(var(--t) + .3s) backwards, mecer 4.6s ease-in-out calc(var(--t) + 1.9s) infinite alternate-reverse; }
+@keyframes brotar { from { scale: 1 .08; opacity: 0; } }
+
+/* CELEBRAR · el BIO FERIA estalla, el lettering sube */
+.l-grunge { left: 50%; top: 50%; translate: -50% -50%; width: min(120vw, 1500px); height: auto; opacity: .2; mix-blend-mode: multiply; rotate: 5deg; }
+.l-pop { left: 50%; top: 50%; translate: -50% -50%; width: min(115vw, 1400px); height: auto; opacity: .55; }
+.welcome.is-playing .l-pop { animation: estallar 1.3s cubic-bezier(.2, 1.5, .4, 1) var(--t) backwards, bambolear 3s ease-in-out calc(var(--t) + 1.3s) infinite alternate; }
+@keyframes estallar { from { scale: .15; rotate: -25deg; opacity: 0; } }
+@keyframes bambolear { from { rotate: -4deg; scale: .98; } to { rotate: 3deg; scale: 1.03; } }
+.welcome.is-playing .l-grunge { animation: pop-in 1s ease-out var(--t) backwards; }
+@keyframes pop-in { from { opacity: 0; scale: .8; } }
+.l-activa { left: 50%; bottom: 10%; translate: -50% 0; width: min(64vw, 640px); height: auto; filter: drop-shadow(0 8px 24px #0B0B0B40); }
+.welcome.is-playing .l-activa { animation: subir 1s cubic-bezier(.2, 1.4, .4, 1) calc(var(--t) + .55s) backwards; }
+@keyframes subir { from { translate: -50% 120%; rotate: -6deg; opacity: 0; } }
+
+/* ---------- el verbo y su elemento, al frente ---------- */
+.flood__txt { position: relative; z-index: 3; display: grid; justify-items: center; gap: 8px; text-align: center; padding-inline: 16px; }
+.flood__elem { height: clamp(34px, 6vw, 60px); width: auto; filter: drop-shadow(0 2px 10px #0B0B0B33); }
+.flood.bg-amarillo .flood__elem { filter: brightness(0); }
+.flood__verbo { font-size: clamp(2.4rem, min(13vw, calc(92vw / (var(--len, 8) * .76))), 10rem); max-width: 96vw; white-space: nowrap; font-weight: 900; line-height: .9; letter-spacing: -.05em; text-transform: uppercase; text-shadow: 0 6px 40px #0B0B0B3d; }
+.flood.bg-amarillo .flood__verbo { text-shadow: none; }
+.flood__verbo i { display: inline-block; font-style: normal; }
+.welcome.is-playing .flood__verbo i { animation: letra-in .65s cubic-bezier(.2, 1.7, .4, 1) calc(var(--t) + .35s + var(--l) * .045s) backwards; }
+.welcome.is-playing .flood__elem { animation: elem-in .5s ease-out calc(var(--t) + .5s) backwards; }
+@keyframes letra-in { from { opacity: 0; transform: translateY(.7em) rotate(calc((var(--l) - 4) * 7deg)) scale(.4); } }
+@keyframes elem-in { from { opacity: 0; transform: translateY(-14px); } }
+.welcome.is-playing .flood__txt { animation: txt-zoom 1.1s cubic-bezier(.2, .9, .3, 1) var(--t) backwards; }
+@keyframes txt-zoom { from { transform: scale(1.16); } }
+
+/* barra de avance: una tira por color */
+.welcome__steps { position: absolute; z-index: 6; left: 50%; bottom: max(22px, env(safe-area-inset-bottom, 0px)); translate: -50% 0; display: flex; gap: 6px; margin: 0; padding: 8px 12px; list-style: none; background: #FFFFFFE6; clip-path: polygon(0 0, calc(100% - 10px) 0, 100% 10px, 100% 100%, 10px 100%, 0 calc(100% - 10px)); }
+.welcome__steps li { width: 26px; height: 8px; opacity: .28; scale: 1 .8; }
+.welcome.is-playing .welcome__steps li { animation: paso .4s ease-out calc(.2s + var(--i) * var(--scene)) forwards; }
+@keyframes paso { to { opacity: 1; scale: 1 1.2; } }
+.welcome.is-final .welcome__steps, .welcome.is-skip .welcome__steps { display: none; }
+
+/* ---------- tarjeta final, sobre papel ---------- */
+.welcome__final {
+  position: absolute; inset: 0; display: grid; place-items: center; overflow: hidden; background: var(--paper); color: var(--ink);
+  clip-path: polygon(-60% 0, -50% 0, -58% 10%, -47% 20%, -59% 30%, -48% 40%, -57% 50%, -46% 60%, -58% 70%, -49% 80%, -59% 90%, -47% 100%, -60% 100%); padding: clamp(16px, 4vw, 48px);
+}
+.welcome.is-playing .welcome__final { animation: wipe-l .9s cubic-bezier(.65, 0, .25, 1) var(--final-at) forwards; }
+.welcome.is-skip .welcome__final, .welcome.is-final .welcome__final { clip-path: none; animation: none; }
+
+.wf__tex { position: absolute; max-width: none; pointer-events: none; user-select: none; }
+.wf__tex--a { left: 50%; top: 52%; translate: -50% -50%; width: min(120%, 1500px); opacity: .17; rotate: -4deg; mix-blend-mode: multiply; }
+.wf__tex--b { right: -9%; bottom: -12%; height: 70%; width: auto; opacity: .55; mix-blend-mode: multiply; transform-origin: 70% 100%; animation: mecer 5s ease-in-out infinite alternate; }
+.wf__tex--c { left: -3%; top: 5%; height: 34%; width: auto; opacity: .85; rotate: -12deg; animation: flotar 7s ease-in-out infinite alternate; }
+.wf__tex--d { left: -6%; bottom: -14%; height: 64%; width: auto; opacity: .3; mix-blend-mode: multiply; transform-origin: 50% 100%; animation: mecer 6s ease-in-out infinite alternate-reverse; }
+@keyframes flotar { to { translate: 2vw 3vh; rotate: -4deg; } }
+
+.wf__card { position: relative; z-index: 2; display: grid; justify-items: center; gap: clamp(10px, 2vh, 20px); text-align: center; max-width: 880px; }
+.wf__chip { display: inline-block; margin: 0; padding: 7px 16px; background: var(--turquesa); color: var(--ink); font-size: .78rem; font-weight: 800; letter-spacing: .14em; text-transform: uppercase; clip-path: polygon(0 0, calc(100% - 12px) 0, 100% 12px, 100% 100%, 12px 100%, 0 calc(100% - 12px)); }
+.wf__title { margin: 0; display: flex; flex-wrap: wrap; justify-content: center; gap: 0 .22em; font-size: clamp(3rem, 11vw, 8.4rem); font-weight: 900; line-height: .9; letter-spacing: -.055em; }
+.wf__w { display: inline-block; }
+.wf__w--em { font-style: italic; color: var(--rosa); }
+.wf__w--em i { font-style: normal; color: var(--ink); }
+.wf__text { margin: 0; max-width: 34ch; font-size: clamp(1.05rem, 2.2vw, 1.35rem); line-height: 1.35; color: var(--ink-2); }
+.wf__text strong { color: var(--ink); }
+.wf__dots { display: flex; gap: 6px; margin: 0; padding: 0; list-style: none; }
+.wf__dots li { width: 34px; height: 10px; }
+.wf__meta { margin: 0; display: flex; flex-wrap: wrap; justify-content: center; gap: 6px 18px; font-weight: 700; font-size: .95rem; letter-spacing: .02em; }
+.wf__meta span::before { content: ""; display: inline-block; width: 12px; height: 4px; margin-right: 9px; background: var(--rosa); vertical-align: 3px; }
+.wf__meta strong { color: var(--rosa); }
+.wf__actions { display: flex; flex-wrap: wrap; justify-content: center; gap: 12px; margin-top: 6px; }
+.welcome .btn--go { background: var(--rosa); color: var(--white); border-color: var(--rosa); text-shadow: none; }
+.welcome .btn--soft { background: var(--white); color: var(--ink); }
+
+/* la tarjeta se arma después de abrirse el papel */
+.welcome.is-playing:not(.is-skip) .wf__chip, .welcome.is-playing:not(.is-skip) .wf__w, .welcome.is-playing:not(.is-skip) .wf__text,
+.welcome.is-playing:not(.is-skip) .wf__dots, .welcome.is-playing:not(.is-skip) .wf__meta, .welcome.is-playing:not(.is-skip) .wf__actions {
+  animation: wf-in .7s cubic-bezier(.2, 1.3, .4, 1) calc(var(--final-at) + .35s + var(--k) * .1s) backwards;
+}
+@keyframes wf-in { from { opacity: 0; transform: translateY(34px) rotate(1.5deg) scale(.94); } }
+
+/* ---------- botón de saltar / cerrar y acceso desde el pie ---------- */
+.welcome__close {
+  position: absolute; z-index: 10; top: max(16px, env(safe-area-inset-top, 0px)); right: max(16px, env(safe-area-inset-right, 0px));
+  min-height: 44px; padding: 0 20px; border: 0; cursor: pointer; font: inherit; font-weight: 800;
+  background: var(--white); color: var(--ink); clip-path: polygon(0 0, calc(100% - 10px) 0, 100% 10px, 100% 100%, 10px 100%, 0 calc(100% - 10px)); transition: transform .2s;
+}
+.welcome__close:hover { transform: translateY(-2px); }
+.welcome__close:focus-visible, .welcome .btn:focus-visible { outline: 3px solid var(--ink); outline-offset: 3px; }
+.welcome__again { margin-left: 18px; border: 0; background: none; padding: 6px 0; font: inherit; color: inherit; text-decoration: underline; text-underline-offset: 3px; cursor: pointer; }
+
+@media (max-width: 640px) {
+  .flood__verbo { font-size: clamp(2.2rem, min(17vw, calc(92vw / (var(--len, 8) * .76))), 5.4rem); }
+  .l-flor--a { height: 66%; } .l-flor--b { height: 46%; }
+  .l-fly--a { width: 70vw; } .l-nau--a { width: 170vw; right: -60%; } .l-nau--b { width: 80vw; }
+  .l-grow--a { height: 84%; } .l-grow--b { height: 70%; }
+  .l-pop, .l-grunge { width: 190vw; } .l-activa { width: 82vw; }
+  .wf__title { font-size: clamp(2.8rem, 15vw, 4.6rem); }
+  .wf__tex--b { height: 42%; right: -22%; } .wf__tex--c { height: 20%; } .wf__tex--d { height: 38%; }
+}
+
+/* sin animaciones: se ve directamente la tarjeta final (salvo que se fuerce con ?bienvenida=anim) */
+@media (prefers-reduced-motion: reduce) {
+  .welcome:not(.force-anim) .flood { display: none; }
+  .welcome:not(.force-anim) .welcome__final { clip-path: none; animation: none; }
+  .welcome:not(.force-anim) *, .welcome:not(.force-anim) *::before { animation: none !important; transition: none !important; }
+}
+/* HACER: la trama de fondo más suave, para que el rojo siga siendo rojo */
+.l-tex--ink { opacity: .26; filter: grayscale(1) contrast(1.2) brightness(1.3); }
