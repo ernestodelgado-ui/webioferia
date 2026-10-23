@@ -18,7 +18,7 @@
 /* ---------- escenas: cortina de papel rasgado que barre la pantalla ---------- */
 .welcome__floods { position: absolute; inset: 0; }
 .flood {
-  --t: calc(.2s + var(--i) * var(--scene));
+  --t: calc(.1s + var(--i) * var(--scene));
   position: absolute; inset: 0; display: grid; place-items: center; overflow: hidden; color: var(--white);
   clip-path: polygon(-60% 0, -50% 0, -58% 10%, -47% 20%, -59% 30%, -48% 40%, -57% 50%, -46% 60%, -58% 70%, -49% 80%, -59% 90%, -47% 100%, -60% 100%);
 }
@@ -125,7 +125,7 @@
 /* barra de avance: una tira por color */
 .welcome__steps { position: absolute; z-index: 6; left: 50%; bottom: max(22px, env(safe-area-inset-bottom, 0px)); translate: -50% 0; display: flex; gap: 6px; margin: 0; padding: 8px 12px; list-style: none; background: #FFFFFFE6; clip-path: polygon(0 0, calc(100% - 10px) 0, 100% 10px, 100% 100%, 10px 100%, 0 calc(100% - 10px)); }
 .welcome__steps li { width: 26px; height: 8px; opacity: .28; scale: 1 .8; }
-.welcome.is-playing .welcome__steps li { animation: paso .4s ease-out calc(.2s + var(--i) * var(--scene)) forwards; }
+.welcome.is-playing .welcome__steps li { animation: paso .4s ease-out calc(.1s + var(--i) * var(--scene)) forwards; }
 @keyframes paso { to { opacity: 1; scale: 1 1.2; } }
 .welcome.is-final .welcome__steps, .welcome.is-skip .welcome__steps { display: none; }
 
@@ -217,3 +217,9 @@
 }
 .welcome__calm:hover { transform: translateY(-2px); }
 .welcome__calm:focus-visible { outline: 3px solid var(--ink); outline-offset: 3px; }
+
+/* ---------- pantalla de carga: la marca, mientras llegan las piezas ---------- */
+.welcome__splash { position: absolute; inset: 0; z-index: 5; display: grid; place-items: center; background: #0B0B0B; transition: opacity .35s; pointer-events: none; }
+.welcome__splash span { display: block; width: min(62vw, 440px); aspect-ratio: 830 / 145; background: #fff; -webkit-mask: url("assets/logos/bioferia-wordmark.svg") center / contain no-repeat; mask: url("assets/logos/bioferia-wordmark.svg") center / contain no-repeat; animation: splash-pulse 1.1s ease-in-out infinite alternate; }
+@keyframes splash-pulse { from { opacity: .45; transform: scale(.97); } to { opacity: 1; transform: scale(1); } }
+.welcome.is-playing .welcome__splash, .welcome.is-skip .welcome__splash, .welcome.is-final .welcome__splash { opacity: 0; visibility: hidden; transition: opacity .3s, visibility 0s .3s; }

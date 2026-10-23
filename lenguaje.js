@@ -85,3 +85,19 @@
   m.className = "footer__mark"; m.src = "assets/graficas/bioferia-collage.webp"; m.alt = ""; m.setAttribute("aria-hidden", "true"); m.loading = "lazy"; m.draggable = false;
   f.append(m);
 })();
+
+/* ---------- aparición al scrollear: también para lo que arman extras.js y lenguaje.js ----------
+   main.js solo observa lo que existe cuando corre; galería, videos, agenda, apps, catalizadores, etc. se crean después
+   y quedaban invisibles. Acá se observan todos los que falten. */
+(function () {
+  const els = [...document.querySelectorAll(".reveal:not(.is-in)")];
+  if (!els.length) return;
+  if (document.documentElement.classList.contains("menos-movimiento") || !("IntersectionObserver" in window)) {
+    els.forEach((e) => e.classList.add("is-in"));
+    return;
+  }
+  const io = new IntersectionObserver((entries) => {
+    entries.forEach((en) => { if (en.isIntersecting) { en.target.classList.add("is-in"); io.unobserve(en.target); } });
+  }, { rootMargin: "0px 0px -8% 0px", threshold: 0.08 });
+  els.forEach((e) => io.observe(e));
+})();

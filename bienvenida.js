@@ -21,7 +21,7 @@
   const G = "assets/graficas/";
   const T = "assets/texturas/";
   const SCENE = 1.25;                      // segundos por escena
-  const FINAL_AT = 0.2 + 5 * SCENE;        // cuando se abre la tarjeta final
+  const FINAL_AT = 0.1 + 5 * SCENE;        // cuando se abre la tarjeta final
 
   // Cada escena: verbo, elemento, color y las piezas de la marca que se mueven en ella.
   const steps = [
@@ -50,6 +50,7 @@
 
   dlg.innerHTML = `
     <div class="welcome__stage">
+      <div class="welcome__splash" aria-hidden="true"><span></span></div>
       <div class="welcome__floods" aria-hidden="true">
         ${steps.map((s, i) => `
           <div class="flood bg-${s.color} wipe-${s.wipe}" style="--i:${i}; --len:${s.verbo.length}">
@@ -116,8 +117,8 @@
     document.documentElement.classList.add("welcome-open");
     if (!dlg.open) dlg.showModal();
     document.documentElement.classList.remove("welcome-pending");
-    // arranca cuando están las imágenes, o a más tardar a los 1,6 s aunque la conexión sea lenta
-    const wait = new Promise((res) => window.setTimeout(res, 1600));
+    // arranca cuando están las imágenes, o a más tardar al 1,1 s aunque la conexión sea lenta (mientras tanto se ve la marca)
+    const wait = new Promise((res) => window.setTimeout(res, 1100));
     Promise.race([preloaded, wait]).then(play);
   }
 
