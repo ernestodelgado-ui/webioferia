@@ -14,11 +14,9 @@
   const forceAnim = /[?&]bienvenida=anim/.test(location.search);
   // La bienvenida SIEMPRE se muestra con movimiento (es el momento de apertura y tiene botón para saltarla).
   // Quien prefiere menos movimiento lo elige con el botón "Reducir movimiento"; la elección se recuerda.
-  const osReduce = window.matchMedia("(prefers-reduced-motion: reduce)").matches;
-  function savedCalm() { try { return localStorage.getItem("bf-calma") === "1"; } catch (e) { return false; } }
-  function saveCalm(v) { try { localStorage.setItem("bf-calma", v ? "1" : "0"); } catch (e) { /* sin almacenamiento */ } }
-  let calm = savedCalm() && !forceAnim;
-  const reduce = osReduce && !forceAnim; // solo para el desplazamiento suave al cerrar
+  const root = document.documentElement;
+  function saveCalm(v) { try { localStorage.setItem("bf-calma", v ? "1" : "0"); } catch (e) { /* sin almacenamiento */ } root.classList.toggle("menos-movimiento", v); }
+  let calm = root.classList.contains("menos-movimiento") && !forceAnim;
   const START = new Date("2027-04-09T11:00:00-03:00").getTime();
   const G = "assets/graficas/";
   const T = "assets/texturas/";
@@ -136,11 +134,11 @@
       dlg.close();
       dlg.classList.remove("is-leaving", "is-playing", "is-final", "is-skip");
       document.documentElement.classList.remove("welcome-open");
-      if (target === "agenda") { const a = document.getElementById("agenda"); if (a) a.scrollIntoView({ behavior: reduce ? "auto" : "smooth" }); }
+      if (target === "agenda") { const a = document.getElementById("agenda"); if (a) a.scrollIntoView({ behavior: root.classList.contains("menos-movimiento") ? "auto" : "smooth" }); }
       else window.scrollTo({ top: 0, behavior: "auto" });
       close.innerHTML = 'Saltar <span aria-hidden="true">›</span>';
     };
-    if (reduce) done(); else window.setTimeout(done, 380);
+    if (root.classList.contains("menos-movimiento")) done(); else window.setTimeout(done, 380);
   }
 
   const calmBtn = dlg.querySelector("[data-calm]");
@@ -166,6 +164,13 @@
     b.type = "button"; b.className = "welcome__again"; b.textContent = "Ver la bienvenida";
     b.addEventListener("click", open);
     legal.append(b);
+    // Preferencia de movimiento de toda la página (por defecto, con movimiento). Se recuerda y recarga para aplicarse.
+    const m = document.createElement("button");
+    m.type = "button"; m.className = "welcome__again";
+    const label = () => { m.textContent = root.classList.contains("menos-movimiento") ? "Activar movimiento" : "Reducir movimiento"; m.setAttribute("aria-pressed", String(root.classList.contains("menos-movimiento"))); };
+    label();
+    m.addEventListener("click", () => { saveCalm(!root.classList.contains("menos-movimiento")); label(); location.reload(); });
+    legal.append(m);
   }
 
   // precarga de las imágenes de la secuencia para que no entren tarde

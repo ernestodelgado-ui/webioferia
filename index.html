@@ -19,6 +19,7 @@
   <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800;900&display=swap" rel="stylesheet">
 
   <!-- La bienvenida es lo primero que se ve: la página queda oculta hasta que se abre (con salvavidas por si algo falla). -->
+  <script>try{if(localStorage.getItem("bf-calma")==="1")document.documentElement.classList.add("menos-movimiento")}catch(e){}</script>
   <script>try{var q=/[?&]bienvenida/.test(location.search);if(q||(!sessionStorage.getItem("bf-bienvenida")&&!location.hash)){document.documentElement.classList.add("welcome-pending");setTimeout(function(){document.documentElement.classList.remove("welcome-pending")},7000)}}catch(e){}</script>
   <style>html.welcome-pending{background:#0B0B0B}html.welcome-pending body>*:not(.welcome){visibility:hidden}</style>
   <link rel="stylesheet" href="styles.css">

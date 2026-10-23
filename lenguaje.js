@@ -9,7 +9,7 @@
   "use strict";
 
   const C = window.BIOFERIA;
-  const reduce = window.matchMedia("(prefers-reduced-motion: reduce)").matches;
+  const reduce = document.documentElement.classList.contains("menos-movimiento");
 
   /* ---------- azar repetible: la página se ve igual en cada visita ---------- */
   function rng(seed) {

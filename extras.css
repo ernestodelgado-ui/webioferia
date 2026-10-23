@@ -4,7 +4,8 @@
    ========================================================= */
 
 html { scroll-behavior: smooth; }
-@media (prefers-reduced-motion: reduce) { html { scroll-behavior: auto; } }
+/* modo "reducir movimiento": lo elige la persona con el botón del pie (no depende del sistema) */
+html.menos-movimiento { scroll-behavior: auto; }
 
 /* barra de progreso con los 5 colores */
 .progress { position: fixed; inset: 0 0 auto 0; height: 4px; z-index: 60; pointer-events: none; }
@@ -72,7 +73,8 @@ html { scroll-behavior: smooth; }
 .cinta__row li:nth-child(even) { transform: translateY(18px); }
 .cinta__row img { width: 100%; height: 100%; object-fit: cover; }
 @keyframes cinta { to { transform: translateX(calc(-50% - 7px)); } }
-@media (prefers-reduced-motion: reduce) { .cinta__row { animation: none; overflow-x: auto; } }
+/* modo "reducir movimiento": lo elige la persona con el botón del pie (no depende del sistema) */
+html.menos-movimiento .cinta__row { animation: none; overflow-x: auto; }
 
 /* visor de la galería */
 .gal__lb::backdrop { background: #0B0B0BE6; }
@@ -451,10 +453,9 @@ html { scroll-behavior: smooth; }
 .contacto .btn--dark { animation: pulse-pink 2.6s ease-in-out infinite; }
 @keyframes pulse-pink { 0%, 100% { box-shadow: 0 14px 28px -14px var(--rosa), 0 0 0 0 #FF009933; } 50% { box-shadow: 0 14px 28px -14px var(--rosa), 0 0 0 10px #FF009900; } }
 
-@media (prefers-reduced-motion: reduce) {
-  .contacto__grafica, .contacto__grid, .contacto__grid::before, .perfil, .contacto .btn--dark { animation: none; }
-  .js-reveal .contacto__intro.reveal .contacto__grafica { opacity: 1; scale: 1; rotate: 0deg; }
-}
+/* modo "reducir movimiento": lo elige la persona con el botón del pie (no depende del sistema) */
+html.menos-movimiento .contacto__grafica, html.menos-movimiento .contacto__grid, html.menos-movimiento .contacto__grid::before, html.menos-movimiento .perfil, html.menos-movimiento .contacto .btn--dark { animation: none; }
+html.menos-movimiento .js-reveal .contacto__intro.reveal .contacto__grafica { opacity: 1; scale: 1; rotate: 0deg; }
 
 /* botones de color: tipografía blanca (con una sombra leve para que se lea sobre el celeste) */
 .btn--ticket, .btn--stand, .btn--ticket .btn__soon { color: var(--white); text-shadow: 0 1px 8px #0B0B0B40; }
@@ -485,7 +486,8 @@ html { scroll-behavior: smooth; }
 }
 @keyframes blob-drift { from { transform: translate(0, 0) rotate(0deg) scale(1); } to { transform: translate(8%, -10%) rotate(60deg) scale(1.15); } }
 
-@media (prefers-reduced-motion: reduce) { .blobs i, .frase__vos { animation: none; } }
+/* modo "reducir movimiento": lo elige la persona con el botón del pie (no depende del sistema) */
+html.menos-movimiento .blobs i, html.menos-movimiento .frase__vos { animation: none; }
 
 /* ajuste: manchas con color pleno (sin transparencia, para no mezclar el amarillo con el celeste), forma orgánica fija */
 .blobs i { filter: none; mix-blend-mode: normal; opacity: 1; border-radius: 58% 42% 55% 45% / 48% 56% 44% 52%; }
@@ -536,7 +538,8 @@ html { scroll-behavior: smooth; }
 @keyframes org-bob { from { transform: rotate(-22deg) translateY(0); } to { transform: rotate(-12deg) translateY(-14px); } }
 .contacto__grid::before { display: none; }
 .contacto__grid { background: var(--turquesa); animation: none; }
-@media (prefers-reduced-motion: reduce) { .contacto .blobs i { animation: none !important; } }
+/* modo "reducir movimiento": lo elige la persona con el botón del pie (no depende del sistema) */
+html.menos-movimiento .contacto .blobs i { animation: none !important; }
 /* más foto visible: degradé más liviano */
 .contacto .blobs i:nth-child(2) { background: linear-gradient(115deg, #01DAC7D9 0%, #01DAC79E 42%, #01DAC759 62%, #FF009999 100%); }
 .contacto .frase { text-shadow: 0 2px 22px #0B0B0B66; }
@@ -566,7 +569,8 @@ html { scroll-behavior: smooth; }
 .count__cell:last-child .count__n { animation: count-beat 1s steps(1) infinite; }
 @keyframes count-beat { 0% { opacity: 1; } 85% { opacity: .78; } }
 .count__msg { font-weight: 900; font-size: 1.3rem; text-shadow: 0 1px 12px #0B0B0B59; }
-@media (prefers-reduced-motion: reduce) { .count__cell:last-child .count__n { animation: none; } }
+/* modo "reducir movimiento": lo elige la persona con el botón del pie (no depende del sistema) */
+html.menos-movimiento .count__cell:last-child .count__n { animation: none; }
 @media (max-width: 420px) { .count__cell { min-width: 56px; padding: 7px 8px 6px; } }
 
 /* =========================================================
@@ -618,7 +622,8 @@ html { scroll-behavior: smooth; }
 .ag__panel[data-day="amarillo"] .ag__item.is-key .ag__hora { color: var(--ink); }
 .ag__ahora { position: absolute; right: 10px; top: 10px; padding: 3px 10px; border-radius: 999px; background: var(--rosa); color: var(--white); font-size: .72rem; font-weight: 800; letter-spacing: .08em; text-transform: uppercase; animation: ahora 1.8s ease-in-out infinite; }
 @keyframes ahora { 50% { transform: scale(1.08); } }
-@media (prefers-reduced-motion: reduce) { .ag__ahora { animation: none; } }
+/* modo "reducir movimiento": lo elige la persona con el botón del pie (no depende del sistema) */
+html.menos-movimiento .ag__ahora { animation: none; }
 .ag__nota { margin-top: 16px; font-size: .85rem; color: var(--ink-2); }
 @media (max-width: 520px) { .ag__item { grid-template-columns: 64px minmax(0, 1fr); gap: 10px; } .ag__hora { font-size: 1.02rem; } }
 
@@ -639,7 +644,8 @@ html { scroll-behavior: smooth; }
 .ticker__item.bg-amarillo img { filter: brightness(0); }
 .ticker__sep img { width: 46px; height: auto; display: block; opacity: .85; }
 @keyframes ticker { to { transform: translateX(calc(-100% / 3 - 6px)); } }
-@media (prefers-reduced-motion: reduce) { .ticker__row { animation: none; overflow-x: auto; } }
+/* modo "reducir movimiento": lo elige la persona con el botón del pie (no depende del sistema) */
+html.menos-movimiento .ticker__row { animation: none; overflow-x: auto; }
 
 .campana { padding-block: clamp(48px, 7vw, 96px); background: var(--paper); overflow: hidden; --eb: var(--rosa); }
 .fan { display: flex; justify-content: center; list-style: none; margin: 0; padding: 36px 0 24px; }

@@ -737,8 +737,10 @@ body.menu-open { overflow: hidden; }
 .js-reveal .reveal { opacity: 0; transform: translateY(18px); transition: opacity .6s var(--ease), transform .7s var(--ease); }
 .js-reveal .reveal.is-in { opacity: 1; transform: none; }
 
-@media (prefers-reduced-motion: reduce) {
-  html { scroll-behavior: auto; }
-  /* menos movimiento para todo, salvo la bienvenida cuando se pide a propósito con ?bienvenida=anim */
-  *:not(.welcome.force-anim, .welcome.force-anim *), *:not(.welcome.force-anim, .welcome.force-anim *)::before, *:not(.welcome.force-anim, .welcome.force-anim *)::after { animation-duration: .01ms !important; animation-iteration-count: 1 !important; transition-duration: .01ms !important; }
-}
+/* modo "reducir movimiento": lo elige la persona con el botón del pie (no depende del sistema) */
+html.menos-movimiento { scroll-behavior: auto; }
+
+  /* menos movimiento para todo, salvo la bienvenida (que tiene su propia versión calma) */
+  html.menos-movimiento *:not(.welcome.force-anim):not(.welcome.force-anim *),
+  html.menos-movimiento *:not(.welcome.force-anim):not(.welcome.force-anim *)::before,
+  html.menos-movimiento *:not(.welcome.force-anim):not(.welcome.force-anim *)::after { animation-duration: .01ms !important; animation-iteration-count: 1 !important; transition-duration: .01ms !important; }

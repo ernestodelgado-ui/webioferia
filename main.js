@@ -6,7 +6,8 @@
   "use strict";
 
   const C = window.BIOFERIA;
-  const reduceMotion = window.matchMedia("(prefers-reduced-motion: reduce)");
+  // "Reducir movimiento" lo elige la persona con el botón del pie; no se toma del sistema.
+  const reduceMotion = { get matches() { return document.documentElement.classList.contains("menos-movimiento"); } };
 
   /* ---------- utilidades ---------- */
 

@@ -106,7 +106,8 @@ body::after {
 .spec--turquesa { filter: hue-rotate(-146deg) saturate(1.2) brightness(1.1); }
 .spec--amarillo { filter: hue-rotate(88deg) saturate(1.3) brightness(1.15); }
 @keyframes spec-float { 50% { translate: 0 -10px; rotate: calc(var(--rot, 0deg) + 5deg); } }
-@media (prefers-reduced-motion: reduce) { .spec { animation: none; } }
+/* modo "reducir movimiento": lo elige la persona con el botón del pie (no depende del sistema) */
+html.menos-movimiento .spec { animation: none; }
 @media (max-width: 640px) { .spec { width: 70px; opacity: .9; top: 14px; } .agenda .spec--left { display: none; } }
 
 /* ---------- 7. letra menuda de afiche: marca vertical en el margen ---------- */

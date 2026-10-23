@@ -9,7 +9,7 @@
 
   const C = window.BIOFERIA;
   const G = C && C.galeria;
-  const reduceMotion = window.matchMedia("(prefers-reduced-motion: reduce)").matches;
+  const reduceMotion = document.documentElement.classList.contains("menos-movimiento");
   const esc = (s) =>
     String(s ?? "").replace(/[&<>"']/g, (c) => ({ "&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;", "'": "&#39;" }[c]));
   // Color por significado (catalizador del mapa): stands/gastronomía = rojo, predio abierto = celeste, escenarios = rosa.

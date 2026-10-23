@@ -189,11 +189,7 @@
 }
 
 /* sin animaciones: se ve directamente la tarjeta final (salvo que se fuerce con ?bienvenida=anim) */
-@media (prefers-reduced-motion: reduce) {
-  .welcome:not(.force-anim) .flood { display: none; }
-  .welcome:not(.force-anim) .welcome__final { clip-path: none; animation: none; }
-  .welcome:not(.force-anim) *, .welcome:not(.force-anim) *::before { animation: none !important; transition: none !important; }
-}
+
 /* HACER: la trama de fondo más suave, para que el rojo siga siendo rojo */
 .l-tex--ink { opacity: .26; filter: grayscale(1) contrast(1.2) brightness(1.3); }
 
