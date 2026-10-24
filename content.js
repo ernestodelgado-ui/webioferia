@@ -192,7 +192,7 @@ window.BIOFERIA = {
     texto: "Escaneá el código con la cámara del celular o tocá el botón. No hay nada que instalar: se abre al instante y la podés guardar en tu pantalla de inicio.",
     items: [
       { id: "festival", color: "turquesa", etiqueta: "App del festival", titulo: "Bioferia en tu bolsillo", descripcion: "Agenda, mapa del predio, tus actividades y avisos para no perderte nada durante los tres días.", puntos: ["Agenda y mis actividades", "Mapa del predio", "Entradas y avisos"], url: "https://bioapp-lilac.vercel.app/", qr: "assets/qr/qr-1.png", shot: "assets/apps/app-festival.jpg", boton: "Abrir la app" },
-      { id: "juego", color: "rosa", etiqueta: "App de juegos", titulo: "Catálisis", descripcion: "Sembrá tu semilla, descubrí tu superpoder y recorré el mapa por catalizadores: Fuego, Aire, Agua, Tierra y Corazón.", puntos: ["Tu semilla y tu superpoder", "Mapa por catalizadores", "Un recuerdo para llevarte"], url: "https://catalisis-one.vercel.app/", qr: "assets/qr/qr-2.png", shot: "assets/apps/app-juego.jpg", boton: "Jugar ahora" },
+      { id: "juego", color: "rosa", etiqueta: "App de juegos", titulo: "Catálisis", descripcion: "Sembrá tu semilla, descubrí tu superpoder y recorré el mapa por catalizadores: Fuego, Aire, Agua, Tierra y Corazón.", puntos: ["Tu semilla y tu superpoder", "Mapa por catalizadores", "Un recuerdo para llevarte"], url: "https://biojuego3d.vercel.app/", qr: "assets/qr/qr-2.png", shot: "assets/apps/app-juego.jpg", boton: "Jugar ahora" },
     ],
   },
 
