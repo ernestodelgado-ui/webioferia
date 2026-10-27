@@ -27,7 +27,6 @@ window.BIOFERIA = {
     { label: "Áreas", href: "#areas" },
     { label: "Galería", href: "#galeria" },
     { label: "Agenda", href: "#agenda" },
-    { label: "Experiencias", href: "#experiencias" },
     { label: "Impacto", href: "#impacto" },
     { label: "App", href: "#app" },
     { label: "Contacto", href: "#contacto" },

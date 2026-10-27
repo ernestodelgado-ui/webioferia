@@ -19,7 +19,7 @@
   /* ---------- cinta de verbos (lenguaje gráfico de la marca) después del hero ---------- */
 
   const heroSec = document.getElementById("festival");
-  if (heroSec) {
+  if (heroSec && false) {                      // el banner de verbos ahora vive en la pantalla "Vuelve el festival"
     const verbs = [
       ["hacer", "Hacer", "rojo"], ["conectar", "Conectar", "turquesa"], ["transformar", "Transformar", "azul"],
       ["cuidar", "Cuidar", "amarillo"], ["celebrar", "Celebrar", "rosa"],
@@ -34,7 +34,7 @@
 
   /* ---------- campaña: afiches en abanico (identidad gráfica) ---------- */
 
-  const introSec = document.querySelector(".intro");
+  const introSec = document.querySelector(".intro") || document.querySelector(".areas");
   if (introSec) {
     const posters = [
       { src: "assets/afiches/post-tu-basura.jpg", alt: "Post «Tu basura termina acá»", verbo: "Hacer", elem: "Fuego", color: "rojo" },
@@ -64,7 +64,7 @@
             </li>`).join("")}
         </ul>
       </div>`;
-    introSec.after(s);
+    if (introSec.classList.contains("intro")) introSec.after(s); else introSec.before(s);
   }
 
   /* ---------- contador regresivo en el hero ---------- */
@@ -438,7 +438,7 @@
   /* ---------- cinta de fotos que corre sola (antes de contacto) ---------- */
 
   const contacto = document.getElementById("contacto");
-  if (G && contacto) {
+  if (false && G && contacto) {
     const pics = G.items.filter((_, i) => i % 2 === 0).slice(0, 10);
     const row = pics.map((p) => `<li><img src="${esc(p.src)}" alt="" loading="lazy" draggable="false"></li>`).join("");
     const band = document.createElement("section");

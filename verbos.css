@@ -1,0 +1,92 @@
+/* =========================================================
+   5 CATALIZADORES · 5 VERBOS · título a la izquierda, cinco tarjetas que se despliegan a la derecha
+   ========================================================= */
+.cv { width: min(1240px, 100% - 32px); margin: 0 auto; padding-block: var(--sec-y); display: grid; grid-template-columns: minmax(0, 1fr) minmax(0, .8fr); gap: clamp(24px, 5vw, 80px); align-items: center; font-family: "Inter", system-ui, sans-serif; }
+.cv__izq { container-type: inline-size; }
+.cv__titulo { margin: 0; display: grid; font-weight: 400; letter-spacing: -.065em; text-wrap: nowrap; color: var(--ink); }
+.cv__l1 { font-size: 11.2cqw; line-height: .95; }
+.cv__l2 { font-size: 20.4cqw; line-height: .82; font-weight: 500; letter-spacing: -.07em; margin-left: -.03em; }
+.cv__l3 { font-size: 9.6cqw; line-height: 1; color: #FF00B2; letter-spacing: -.07em; }
+.cv__txt { margin: clamp(14px, 2vw, 26px) 0 0; max-width: 28em; font-size: clamp(1rem, 1.5vw, 1.35rem); line-height: 1.3; letter-spacing: -.01em; color: var(--ink); }
+.cv__mapa { margin-top: clamp(22px, 3vw, 40px); min-height: 54px; padding: 0 clamp(36px, 5vw, 60px); border: 0; border-radius: 999px; background: #FF00B2; color: #fff; font: inherit; font-size: 1.1rem; cursor: pointer; transition: transform .2s; }
+.cv__mapa:hover { transform: translateY(-2px); }
+.cv__mapa:focus-visible { outline: 3px solid var(--ink); outline-offset: 4px; }
+
+/* tarjetas */
+.cv__lista { list-style: none; margin: 0; padding: 0; display: flex; flex-direction: column; gap: clamp(10px, 1.6vw, 22px); height: min(88svh, 800px); min-height: 560px; }
+.cv__c {
+  position: relative; flex: 1 1 0; min-height: 0; overflow: hidden; isolation: isolate; background: var(--cc); color: #fff;
+  border-radius: 0 0 0 clamp(44px, 7vw, 100px); transition: flex-grow .6s cubic-bezier(.2, .8, .2, 1);
+}
+.cv__c.bg-amarillo { color: var(--ink); }
+.cv__c[data-open="true"] { flex-grow: 3.6; }
+.cv__art { position: absolute; inset: 0; z-index: 0; background: no-repeat; mix-blend-mode: multiply; transition: opacity .5s; }
+.cv__c.bg-amarillo .cv__art { background-size: cover; background-position: center; }
+.cv__c.bg-rosa .cv__art { background-size: 40% auto; background-position: left 2% top 50%; }
+.cv__c.bg-azul .cv__art { background-size: 66% auto; background-position: left -6% top 58%; }
+.cv__c.bg-turquesa .cv__art { background-size: 62% auto; background-position: left 2% top 46%; }
+.cv__c.bg-rojo .cv__art { background-size: 46% auto; background-position: left 4% top 24%; }
+.cv__c[data-open="true"] .cv__art { opacity: 0; }
+
+/* abierta: foto real + color + nuestras formas */
+.cv__photo, .cv__tint, .cv__shapes { position: absolute; inset: 0; z-index: 0; pointer-events: none; opacity: 0; transition: opacity .55s; }
+.cv__photo { background: var(--img) center / cover no-repeat; transform: scale(1.08); transition: opacity .55s, transform 1.3s cubic-bezier(.2, .8, .2, 1); }
+.cv__tint { background: var(--cc); mix-blend-mode: multiply; }
+.cv__shapes {
+  background: url("assets/graficas/organismo-rosa.png") right -4% bottom -12% / min(62%, 300px) no-repeat, url("assets/texturas/patron-organico.jpg") center / cover no-repeat;
+  mix-blend-mode: soft-light; filter: grayscale(1) contrast(1.3) brightness(1.3);
+}
+.cv__c[data-open="true"] .cv__photo { opacity: 1; transform: scale(1); }
+.cv__c[data-open="true"] .cv__tint { opacity: .86; }
+.cv__c[data-open="true"] .cv__shapes { opacity: .7; }
+.cv__c.bg-amarillo .cv__tint { mix-blend-mode: normal; }
+.cv__c.bg-amarillo[data-open="true"] .cv__tint { opacity: .55; }
+.cv__c.bg-amarillo[data-open="true"] .cv__shapes { opacity: .25; }
+.cv__c.bg-amarillo .cv__panel, .cv__c.bg-amarillo .cv__btn { text-shadow: 0 0 14px #FED108CC, 0 0 4px #FED108B3; }
+
+.cv__btn {
+  position: absolute; z-index: 2; top: 0; left: 0; right: 0; display: flex; align-items: baseline; justify-content: flex-end; gap: 14px;
+  padding: clamp(14px, 2vw, 26px) clamp(18px, 3vw, 40px); border: 0; background: transparent; color: inherit; font: inherit; text-align: right; cursor: pointer;
+}
+.cv__btn:focus-visible { outline: 3px solid #fff; outline-offset: -6px; }
+.cv__verbo { font-size: clamp(1.4rem, 2.6vw, 2.5rem); font-weight: 400; letter-spacing: -.05em; text-transform: uppercase; line-height: 1; }
+.cv__elem { display: none; font-size: .78rem; font-weight: 600; letter-spacing: .14em; text-transform: uppercase; padding: 5px 12px; border-radius: 999px; background: #FFFFFF59; }
+.cv__c[data-open="true"] .cv__elem { display: inline-block; }
+
+.cv__panel {
+  position: absolute; z-index: 2; left: 0; right: 0; bottom: 0; display: grid; gap: 8px; padding: clamp(18px, 2.6vw, 34px) clamp(20px, 3.4vw, 44px); max-width: 34em;
+  opacity: 0; visibility: hidden; transform: translateY(14px); transition: opacity .3s, transform .3s, visibility 0s .4s;
+}
+.cv__c[data-open="true"] .cv__panel { opacity: 1; visibility: visible; transform: none; transition: opacity .5s .3s, transform .6s .3s cubic-bezier(.2, .8, .2, 1); }
+.cv__sentido { margin: 0; font-size: clamp(1.15rem, 2vw, 1.8rem); font-weight: 600; line-height: 1.12; letter-spacing: -.03em; text-wrap: balance; }
+.cv__donde { margin: 4px 0 0; display: grid; gap: 1px; }
+.cv__donde span { font-size: .72rem; font-weight: 600; letter-spacing: .12em; text-transform: uppercase; opacity: .85; }
+.cv__donde strong { font-size: 1.1rem; font-weight: 700; }
+.cv__det { margin: 0; font-size: .95rem; opacity: .92; }
+
+/* oscuro: el texto de la izquierda pasa a blanco por el token --ink; las tarjetas no cambian */
+html.menos-movimiento .cv__c, html.menos-movimiento .cv__photo { transition: none; }
+
+@media (max-width: 859px) {
+  .cv { grid-template-columns: 1fr; }
+  .cv__lista { height: auto; min-height: 0; }
+  .cv__c { flex: none; min-height: 88px; transition: min-height .5s cubic-bezier(.2, .8, .2, 1); }
+  .cv__c[data-open="true"] { min-height: 420px; }
+  .cv__c:not(.bg-amarillo) .cv__art { background-size: auto 220% !important; }
+  .cv__btn { height: 88px; align-items: center; }
+}
+
+/* título en bloque: cada línea se ajusta por JS al ancho de la columna; el párrafo ocupa el mismo ancho */
+.cv__titulo span { display: block; width: max-content; white-space: nowrap; }
+.cv__l2 { margin-left: 0; }
+.cv__txt { max-width: none; width: 100%; text-wrap: balance; }
+.cv__txt { text-wrap: wrap; text-align: justify; text-align-last: left; }
+
+/* entrada al scrollear */
+.cv:not(.cv-in) .cv__titulo > span, .cv:not(.cv-in) .cv__txt, .cv:not(.cv-in) .cv__mapa { opacity: 0; transform: translateY(24px); filter: blur(8px); }
+.cv .cv__titulo > span { transition: opacity 1s ease var(--d, 0ms), transform 1.1s cubic-bezier(.2, .8, .2, 1) var(--d, 0ms), filter 1s ease var(--d, 0ms); }
+.cv .cv__txt { transition: opacity 1s ease .55s, transform 1s cubic-bezier(.2, .8, .2, 1) .55s, filter 1s ease .55s; }
+.cv .cv__mapa { transition: opacity 1s ease .8s, transform 1s cubic-bezier(.2, .8, .2, 1) .8s, filter 1s ease .8s; }
+.cv:not(.cv-in) .cv__c { opacity: 0; transform: translateX(80px); }
+.cv.cv-in .cv__c { transition: opacity .9s ease var(--d, 0ms), transform 1.1s cubic-bezier(.2, .8, .2, 1) var(--d, 0ms), flex-grow .6s cubic-bezier(.2, .8, .2, 1); }
+html.menos-movimiento .cv * { transition: none !important; }

@@ -1,0 +1,65 @@
+/* =========================================================
+   CONTACTO · negro (oscuro) / blanco (claro); la forma rosa y el rosa de marca no cambian
+   ========================================================= */
+section.ct { --ct-bg: #fff; --ct-fg: #0B0B0B; --ct-chip: #0B0B0B; --ct-chip-fg: #fff; background: var(--ct-bg); color: var(--ct-fg); font-family: "Inter", system-ui, sans-serif; padding-block: clamp(36px, 5vw, 80px); overflow: hidden; position: relative; }
+html[data-tema="oscuro"] section.ct { --ct-bg: #000; --ct-fg: #fff; --ct-chip: #fff; --ct-chip-fg: #0B0B0B; }
+section.ct::before, section.ct::after, section.ct .contacto__grid::before, section.ct .contacto__grid::after { display: none !important; }
+section.ct > .wrap, section.ct .contacto__grid { position: relative; isolation: isolate; width: min(1500px, 100% - 32px); max-width: none; margin: 0 auto; padding: clamp(20px, 3vw, 48px) 0; background: none; border-radius: 0; box-shadow: none; overflow: visible; display: grid; grid-template-columns: minmax(0, 1.05fr) minmax(0, 1fr); gap: clamp(28px, 5vw, 90px); align-items: center; }
+
+.ct__forma { position: absolute; z-index: -1; right: -12%; top: 50%; width: min(980px, 74vw); translate: 0 -50%; pointer-events: none; user-select: none; }
+
+/* izquierda */
+.ct__t { margin: 0; font-weight: 700; font-size: clamp(2.4rem, 5vw, 4.8rem); line-height: 1; letter-spacing: -.07em; color: #FF00B2; }
+.ct__lead { margin: clamp(10px, 1.4vw, 20px) 0 0; font-size: clamp(1rem, 1.5vw, 1.5rem); line-height: 1.25; letter-spacing: -.01em; color: var(--ct-fg); }
+.ct__chips { list-style: none; margin: clamp(14px, 2vw, 26px) 0 0; padding: 0; display: flex; flex-wrap: wrap; gap: 8px 12px; }
+.ct__chips li { padding: 1px 12px; border-radius: 999px; background: var(--ct-chip); color: var(--ct-chip-fg); font-size: clamp(.9rem, 1.3vw, 1.3rem); letter-spacing: -.01em; }
+.ct__big { margin: clamp(22px, 4vw, 60px) 0 0; display: grid; font-weight: 300; font-size: clamp(2.6rem, 6.4vw, 6.4rem); line-height: .92; letter-spacing: -.075em; color: #FF00B2; }
+.ct__big span { display: block; }
+
+/* tarjeta del formulario */
+section.ct .form { background: #fff; color: #0B0B0B; border: 0; border-radius: clamp(22px, 2.4vw, 34px); padding: clamp(20px, 2.4vw, 34px); box-shadow: 0 40px 80px -40px #000000B3; --ink: #0B0B0B; --surface: #fff; }
+section.ct .field label { font-size: clamp(.95rem, 1.2vw, 1.2rem); font-weight: 300; letter-spacing: -.03em; color: #0B0B0B; }
+section.ct .field input, section.ct .field select, section.ct .field textarea { border: 0; border-radius: 999px; background: #EEEEEE; color: #0B0B0B; padding: 10px 16px; box-shadow: none; }
+section.ct .field textarea { border-radius: 24px; min-height: clamp(150px, 16vw, 240px); }
+section.ct .field input:focus, section.ct .field select:focus, section.ct .field textarea:focus { outline: 2px solid #FF00B2; outline-offset: 2px; }
+section.ct .form__demo { margin: 4px 0; padding: 4px 14px; border-radius: 999px; background: #EEEEEE; color: #0B0B0B; font-size: .78rem; letter-spacing: -.03em; }
+section.ct .form .btn { width: auto; justify-self: start; min-height: 40px; padding: 0 clamp(26px, 4vw, 56px); border: 0; border-radius: 999px; background: #FF00B2; color: #fff; font-weight: 400; font-size: 1.05rem; box-shadow: none; clip-path: none; rotate: 0deg; }
+section.ct .form .btn:hover { transform: translateY(-2px); }
+
+/* entrada al scrollear */
+section.ct .ct__t, section.ct .ct__lead, section.ct .ct__big span { transition: opacity 1s ease, transform 1.1s cubic-bezier(.2, .8, .2, 1), filter 1s ease; }
+section.ct:not(.ct-in) .ct__t, section.ct:not(.ct-in) .ct__lead, section.ct:not(.ct-in) .ct__big span { opacity: 0; transform: translateY(26px); filter: blur(10px); }
+section.ct .ct__lead { transition-delay: .2s; } section.ct .ct__big span:nth-child(1) { transition-delay: .9s; } section.ct .ct__big span:nth-child(2) { transition-delay: 1.1s; }
+section.ct .ct__chips li { transition: opacity .8s ease var(--d, 0ms), transform .8s cubic-bezier(.2, 1.3, .4, 1) var(--d, 0ms); }
+section.ct:not(.ct-in) .ct__chips li { opacity: 0; transform: scale(.6); }
+section.ct .ct__forma { transition: clip-path 1.8s cubic-bezier(.6, 0, .2, 1) .1s; clip-path: inset(0 0 0 0); }
+section.ct:not(.ct-in) .ct__forma { clip-path: inset(0 0 0 100%); }
+section.ct .form { transition: opacity 1s ease .6s, transform 1.2s cubic-bezier(.2, .8, .2, 1) .6s; }
+section.ct:not(.ct-in) .form { opacity: 0; transform: translateY(50px); }
+html.menos-movimiento section.ct * { transition: none !important; }
+
+@media (max-width: 899px) {
+  section.ct .contacto__grid { grid-template-columns: minmax(0, 1fr); }
+  .ct__forma { right: -30%; width: 120vw; top: 62%; }
+  .ct__big { font-size: clamp(2.4rem, 12vw, 4rem); }
+}
+
+/* anular el panel turquesa con foto anterior */
+section.ct .blobs, section.ct .frase, section.ct .contacto__grafica { display: none !important; }
+section.ct .contacto__grid, section.ct > .contacto__grid { background: none !important; clip-path: none !important; -webkit-mask: none !important; mask: none !important; animation: none !important; filter: none !important; padding: clamp(20px, 3vw, 48px) 0 !important; margin-inline: auto !important; width: min(1500px, 100% - 32px) !important; max-width: none !important; }
+section.ct .form { isolation: auto; }
+section.ct .form::before, section.ct .form::after { display: none !important; }
+section.ct .form { animation: none; }
+section.ct .contacto__title { color: #FF00B2; text-shadow: none; }
+section.ct .form .btn { animation: none; }
+section.ct .contacto__grid, section.ct > .contacto__grid { width: min(1240px, 100% - 32px) !important; }
+.ct__forma { right: -26%; width: min(900px, 68vw); }
+.ct__big { font-size: clamp(2.2rem, 5vw, 5rem); white-space: nowrap; } @media (max-width: 899px) { .ct__big { white-space: normal; } }
+/* la forma rosa cabe dentro de la sección: no se corta contra el pie */
+section.ct { padding-block: clamp(48px, 6vw, 90px); }
+.ct__forma { height: 96%; width: auto; max-width: none; right: -3%; }
+@media (max-width: 899px) { .ct__forma { height: auto; width: 120vw; right: -30%; } }
+/* forma grande como el póster; la sección se desvanece arriba y abajo en lugar de cortarse en seco */
+.ct__forma { height: auto; width: min(900px, 68vw); right: -26%; -webkit-mask-image: none; mask-image: none; }
+section.ct { -webkit-mask-image: linear-gradient(180deg, transparent 0, #000 70px, #000 calc(100% - 70px), transparent 100%); mask-image: linear-gradient(180deg, transparent 0, #000 70px, #000 calc(100% - 70px), transparent 100%); }
+@media (max-width: 899px) { .ct__forma { width: 120vw; right: -30%; } }

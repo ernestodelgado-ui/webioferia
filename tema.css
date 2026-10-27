@@ -1,0 +1,76 @@
+/* =========================================================
+   TEMA OSCURO · BIOFERIA 2027
+   Modo inmersivo: noche profunda, los cinco colores brillan como luz.
+   Se activa con html[data-tema="oscuro"] (botón del menú). Por defecto, la página es clara.
+   Capa final: para quitarla, borrar este archivo, tema.js y sus dos líneas en index.html.
+   ========================================================= */
+
+html[data-tema="oscuro"] {
+  --ink: #F1EDE6;
+  --ink-2: #BDB7AC;
+  --paper: #0E0D12;
+  --surface: #1A1920;
+  --line: #F1EDE62E;
+  --soft-line: #F1EDE633;
+  --on-ink: #0E0D12;
+  color-scheme: dark;
+}
+
+/* transición suave al cambiar de tema */
+html.tema-cambia, html.tema-cambia *, html.tema-cambia *::before, html.tema-cambia *::after {
+  transition: background-color .6s ease, color .6s ease, border-color .6s ease, box-shadow .6s ease, fill .6s ease !important;
+}
+
+/* lo que siempre es de color mantiene su tinta oscura (texto negro sobre amarillo, turquesa, etc.) */
+html[data-tema="oscuro"] :is(.bg-rojo, .bg-turquesa, .bg-amarillo, .bg-rosa, .commit, .cat5, .btn--stand, .btn--ticket, .contacto__grid, .ag__tab[aria-selected="true"], .hero__ed) {
+  --ink: #0B0B0B; --ink-2: #3A3A3A; --surface: #FFFFFF; --paper: #FAF8F3; --on-ink: #FFFFFF; --line: #0B0B0B1F; --soft-line: #0B0B0B1F;
+}
+html[data-tema="oscuro"] .hero--video .hero__ed { background: #fff; color: #0B0B0B; }
+
+/* botones transparentes y detalles con blanco fijo */
+html[data-tema="oscuro"] .btn--outline:not(.btn--stand) { background: color-mix(in srgb, var(--surface) 70%, transparent); }
+html[data-tema="oscuro"] .hero--video .btn--outline { background: transparent; }
+html[data-tema="oscuro"] .header__nav a:hover { background: #F1EDE60F; }
+html[data-tema="oscuro"] .areas::before, html[data-tema="oscuro"] .galeria::before, html[data-tema="oscuro"] .apps::before, html[data-tema="oscuro"] .campana::before { color: #F1EDE680; }
+
+/* texturas: sobre fondo oscuro se mezclan como luz, no como tinta */
+html[data-tema="oscuro"] .tex--flores, html[data-tema="oscuro"] .tex--nautilo, html[data-tema="oscuro"] .tex--grunge { mix-blend-mode: screen; }
+html[data-tema="oscuro"] .tex--ramas { mix-blend-mode: screen; filter: invert(1); opacity: .16; }
+html[data-tema="oscuro"] .tex--nautilo { opacity: .5; }
+html[data-tema="oscuro"] body::after { mix-blend-mode: screen; opacity: .05; }
+
+
+/* ---------- botón claro / oscuro ---------- */
+.tema-btn {
+  flex: none; display: inline-grid; place-items: center; width: 42px; height: 42px; margin-left: 4px; padding: 0;
+  border: 2px solid var(--ink); border-radius: 50%; background: transparent; color: var(--ink); cursor: pointer;
+  transition: background .25s, color .25s, transform .25s;
+}
+.tema-btn:hover { background: var(--ink); color: var(--on-ink); transform: rotate(-12deg); }
+.tema-btn:focus-visible { outline: 3px solid var(--rosa); outline-offset: 3px; }
+.tema-btn svg { width: 20px; height: 20px; }
+.tema-btn .i-luna { display: none; }
+html[data-tema="oscuro"] .tema-btn .i-sol { display: none; }
+html[data-tema="oscuro"] .tema-btn .i-luna { display: block; }
+@media (max-width: 900px) { .tema-btn { margin-left: auto; } .header__burger { margin-left: 8px; } }
+
+/* el logotipo es una imagen negra: en oscuro se invierte para que se lea */
+html[data-tema="oscuro"] .logo { filter: invert(1); }
+
+/* logos y códigos QR son imágenes oscuras sobre transparente: en oscuro van sobre un fondo claro para que se lean */
+html[data-tema="oscuro"] .logos__item { background: #F1EDE6; border-color: transparent; }
+html[data-tema="oscuro"] .app__qr, html[data-tema="oscuro"] .app__qr img { background: #fff; }
+
+/* texto sobre las formas luminosas del fondo: un halo oscuro suave para que siempre se lea */
+html[data-tema="oscuro"] .tex--nautilo { opacity: .38; }
+
+/* halo oscuro solo en títulos y párrafos que van directo sobre el fondo (nunca en etiquetas, tarjetas ni leyendas) */
+html[data-tema="oscuro"] :is(.sec-head, .region__grid) :is(h2, .eyebrow, .sec-head__text) { text-shadow: 0 0 14px #0E0D12, 0 0 4px #0E0D12CC; }
+html[data-tema="oscuro"] .region__grid :is(p, li, h3, dt, dd) { text-shadow: 0 0 12px #0E0D12, 0 0 3px #0E0D12CC; }
+
+/* etiquetas con fondo claro fijo (papel): conservan tinta oscura también en el tema oscuro */
+html[data-tema="oscuro"] :is(.legend__item) { --ink: #0B0B0B; --ink-2: #3A3A3A; color: #0B0B0B; }
+
+/* botón claro/oscuro: solo el ícono, sin círculo */
+.tema-btn { border: 0; border-radius: 0; background: transparent; width: 40px; height: 40px; }
+.tema-btn:hover { background: transparent; color: var(--rosa); transform: rotate(-12deg) scale(1.1); }

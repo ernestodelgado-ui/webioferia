@@ -1,0 +1,26 @@
+/* =========================================================
+   MAPA · puntos numerados y versión oscura
+   ========================================================= */
+.areas__mapbtn { position: relative; }
+.areas__mapbtn:hover .areas__img { transform: none; }
+html[data-tema="oscuro"] .areas__mapbtn { background: none; box-shadow: none; }
+html[data-tema="oscuro"] .areas__img { background: none; }
+
+.mpin {
+  position: absolute; z-index: 2; translate: -50% -100%; display: grid; place-items: center; min-width: 2.1em; padding: .28em .6em; border-radius: 999px;
+  background: var(--cc, #FF00B2); color: #fff; font: 800 clamp(.55rem, 1.05vw, .8rem)/1 "Inter", system-ui, sans-serif; letter-spacing: .02em; white-space: nowrap;
+  border: 2px solid #fff; box-shadow: 0 6px 14px -4px #0B0B0B99; transition: transform .25s, box-shadow .25s; pointer-events: auto;
+}
+.mpin::after { content: ""; position: absolute; left: 50%; top: 100%; translate: -50% -1px; border: 5px solid transparent; border-top-color: #fff; }
+.mpin--rojo { --cc: #FA3710; } .mpin--turquesa { --cc: #01DAC7; color: #0B0B0B; } .mpin--azul { --cc: #005BFC; }
+.mpin--amarillo { --cc: #FED108; color: #0B0B0B; } .mpin--rosa { --cc: #FF00B2; }
+.mpin.is-hi, .mpin:hover { transform: scale(1.25); z-index: 3; box-shadow: 0 0 0 5px #FFFFFF66, 0 10px 20px -4px #0B0B0BAA; }
+.mpin b { font-weight: 800; }
+
+.areas__mapbtn:not(.mp-in) .mpin { opacity: 0; transform: translateY(-10px) scale(.4); }
+.areas__mapbtn.mp-in .mpin { animation: mpin-pop .6s cubic-bezier(.2, 1.4, .4, 1) var(--d, 0ms) backwards; }
+@keyframes mpin-pop { from { opacity: 0; transform: translateY(-12px) scale(.4); } to { opacity: 1; transform: none; } }
+
+/* fila de la lista resaltada cuando se pasa por su punto */
+.cats__item.is-hi .cats__name { text-decoration: underline; text-decoration-thickness: 2px; text-underline-offset: 4px; }
+html.menos-movimiento .mpin { animation: none !important; }

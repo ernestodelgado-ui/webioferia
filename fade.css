@@ -1,0 +1,7 @@
+/* =========================================================
+   FADE AL SCROLLEAR · solo se aplica a lo que todavía no entró en pantalla
+   ========================================================= */
+.fd { opacity: 0; transform: translateY(44px); transition: opacity .9s ease, transform 1s cubic-bezier(.2, .7, .2, 1); }
+.fd.fd-in { opacity: 1; transform: none; }
+html.nt-on .fd { opacity: 1; transform: none; transition: none; }
+html.menos-movimiento .fd { opacity: 1; transform: none; transition: none; }

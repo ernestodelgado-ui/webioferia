@@ -20,21 +20,16 @@
   const START = new Date("2027-04-09T11:00:00-03:00").getTime();
   const G = "assets/graficas/";
   const T = "assets/texturas/";
-  const SCENE = 1.25;                      // segundos por escena
+  const SCENE = 1.5;                      // segundos por escena
   const FINAL_AT = 0.1 + 5 * SCENE;        // cuando se abre la tarjeta final
 
-  // Cada escena: verbo, elemento, color y las piezas de la marca que se mueven en ella.
+  // Cada escena: un verbo, su elemento, su color y su criatura (que se mezcla sobre el color).
   const steps = [
-    { verbo: "Hacer", color: "rojo", palabra: G + "palabras/fuego.png", wipe: "l",
-      layers: [[T + "patron-organico.jpg", "l-tex l-tex--ink"], [G + "criatura-flores.webp", "l-flor l-flor--a"], [G + "criatura-flores.webp", "l-flor l-flor--b"], [G + "organismo-rosa.png", "l-spin l-spin--a"]] },
-    { verbo: "Conectar", color: "turquesa", palabra: G + "palabras/aire.png", wipe: "r",
-      layers: [[G + "libelula-trama.png", "l-tex l-tex--drift"], [G + "criatura-libelula-simetrica.png", "l-fly l-fly--a"], [G + "criatura-libelula-simetrica.png", "l-fly l-fly--b"], [G + "criatura-libelula-simetrica.png", "l-fly l-fly--c"]] },
-    { verbo: "Transformar", color: "azul", palabra: G + "palabras/agua.png", wipe: "l",
-      layers: [[T + "patron-organico.jpg", "l-tex l-tex--screen"], [G + "criatura-nautilo.webp", "l-nau l-nau--a"], [G + "criatura-nautilo.webp", "l-nau l-nau--b"]] },
-    { verbo: "Cuidar", color: "amarillo", palabra: G + "palabras/tierra.png", wipe: "r",
-      layers: [[T + "troncos.jpg", "l-tex l-tex--ink"], [G + "criatura-ramas.webp", "l-grow l-grow--a"], [G + "criatura-ramas.webp", "l-grow l-grow--b"]] },
-    { verbo: "Celebrar", color: "rosa", palabra: G + "palabras/corazon.png", wipe: "l",
-      layers: [[G + "bioferia-grunge.png", "l-grunge"], [G + "bioferia-collage.webp", "l-pop"], [G + "organismo-rosa.png", "l-spin l-spin--b"], [G + "activa-blanco-rosa.png", "l-activa"]] },
+    { verbo: "Hacer", elem: "Fuego", color: "rojo", art: "assets/collage/fuego.jpg", palabra: "assets/collage/fuego.jpg", layers: [["assets/collage/fuego.jpg"]] },
+    { verbo: "Conectar", elem: "Aire", color: "turquesa", art: "assets/collage/aire.jpg", palabra: "assets/collage/aire.jpg", layers: [["assets/collage/aire.jpg"]] },
+    { verbo: "Transformar", elem: "Agua", color: "azul", art: "assets/collage/agua.jpg", palabra: "assets/collage/agua.jpg", layers: [["assets/collage/agua.jpg"]] },
+    { verbo: "Cuidar", elem: "Tierra", color: "amarillo", art: "assets/collage/tierra.jpg", palabra: "assets/collage/tierra.jpg", layers: [["assets/collage/tierra.jpg"]] },
+    { verbo: "Celebrar", elem: "Corazón", color: "rosa", art: "assets/collage/corazon.jpg", palabra: "assets/collage/corazon.jpg", layers: [["assets/collage/corazon.jpg"]] },
   ];
 
   function seen() { try { return sessionStorage.getItem("bf-bienvenida") === "1"; } catch (e) { return false; } }
@@ -50,39 +45,31 @@
 
   dlg.innerHTML = `
     <div class="welcome__stage">
-      <div class="welcome__splash" aria-hidden="true"><span></span></div>
-      <div class="welcome__floods" aria-hidden="true">
+      <p class="wl__logo" aria-hidden="true"><b>BIO</b>FERIA</p>
+      <p class="wl__count" aria-hidden="true"><span>2027</span></p>
+      <video class="wl__vid" src="assets/video/bienvenida.mp4" poster="assets/video/bienvenida-poster.jpg" muted playsinline loop preload="auto" aria-hidden="true" tabindex="-1"></video>
+      <svg class="wl__svg" width="0" height="0" aria-hidden="true" focusable="false"><filter id="wl-rgb" x="-5%" y="-5%" width="110%" height="110%" color-interpolation-filters="sRGB">
+        <feColorMatrix in="SourceGraphic" type="matrix" values="1 0 0 0 0  0 0 0 0 0  0 0 0 0 0  0 0 0 1 0" result="r"/><feOffset in="r" dx="4" dy="0" result="ro"><animate attributeName="dx" values="3;9;2;-4;6;3" dur="1.6s" repeatCount="indefinite"/></feOffset>
+        <feColorMatrix in="SourceGraphic" type="matrix" values="0 0 0 0 0  0 1 0 0 0  0 0 0 0 0  0 0 0 1 0" result="g"/>
+        <feColorMatrix in="SourceGraphic" type="matrix" values="0 0 0 0 0  0 0 0 0 0  0 0 1 0 0  0 0 0 1 0" result="b"/><feOffset in="b" dx="-4" dy="0" result="bo"><animate attributeName="dx" values="-3;-9;-2;4;-6;-3" dur="1.6s" repeatCount="indefinite"/></feOffset>
+        <feBlend in="ro" in2="g" mode="screen" result="rg"/><feBlend in="rg" in2="bo" mode="screen"/></filter></svg>
+      <div class="wl__scenes" aria-hidden="true">
         ${steps.map((s, i) => `
-          <div class="flood bg-${s.color} wipe-${s.wipe}" style="--i:${i}; --len:${s.verbo.length}">
-            <div class="flood__world">
-              <div class="flood__marquee"><span>${(s.verbo + " ").repeat(8)}</span></div>
-              ${s.layers.map(([src, cls]) => `<img class="layer ${cls}" src="${src}" alt="" draggable="false">`).join("")}
-            </div>
-            <div class="flood__txt">
-              <img class="flood__elem" src="${s.palabra}" alt="" draggable="false">
-              <span class="flood__verbo">${[...s.verbo].map((c, k) => `<i style="--l:${k}">${c}</i>`).join("")}</span>
-            </div>
+          <div class="wl__s wl__s--${s.color}" style="--i:${i}">
+                        <span class="wl__v">${[...s.verbo].map((ch, k) => `<i style="--l:${k}">${ch}</i>`).join("")}</span>
           </div>`).join("")}
-        <ol class="welcome__steps">${steps.map((s, i) => `<li class="bg-${s.color}" style="--i:${i}"></li>`).join("")}</ol>
+        <ol class="wl__bar">${steps.map((s, i) => `<li class="bg-${s.color}" style="--i:${i}"></li>`).join("")}</ol>
       </div>
       <div class="welcome__final">
-        <img class="wf__tex wf__tex--a" src="${G}bioferia-collage.webp" alt="" aria-hidden="true" draggable="false">
-        <img class="wf__tex wf__tex--b" src="${G}criatura-flores.webp" alt="" aria-hidden="true" draggable="false">
-        <img class="wf__tex wf__tex--c" src="${G}criatura-libelula-simetrica.png" alt="" aria-hidden="true" draggable="false">
-        <img class="wf__tex wf__tex--d" src="${G}criatura-ramas.webp" alt="" aria-hidden="true" draggable="false">
-        <div class="wf__card">
-          <p class="wf__chip" style="--k:0">Bienvenida · 8.ª edición</p>
-          <h2 class="wf__title" id="w-title">
-            <span class="wf__w" style="--k:1">Activemos</span>
-            <span class="wf__w" style="--k:2">el</span>
-            <span class="wf__w wf__w--em" style="--k:3">cambio<i>.</i></span>
-          </h2>
-          <p class="wf__text" style="--k:4">Tres días para hacer, conectar, transformar, cuidar y celebrar. <strong>El cambio empieza con vos.</strong></p>
-          <ul class="wf__dots" aria-hidden="true" style="--k:5">${steps.map((s) => `<li class="bg-${s.color}"></li>`).join("")}</ul>
-          <p class="wf__meta" style="--k:6"><span>9, 10 y 11 de abril de 2027</span><span>Hipódromo de Palermo</span><span>${countTxt}</span></p>
-          <div class="wf__actions" style="--k:7">
-            <button type="button" class="btn btn--go" data-go="top">¡Entrar a Bioferia!</button>
-            <button type="button" class="btn btn--soft" data-go="agenda">Ver la agenda</button>
+        <div class="wl__fin">
+          <p class="wl__chip" style="--k:0">Bienvenida · 8.ª edición</p>
+          <h2 class="wl__t" id="w-title"><span style="--k:1">ACTIVEMOS</span><b style="--k:2">EL CAMBIO</b></h2>
+          <p class="wl__txt" style="--k:3">Tres días para hacer, conectar, transformar, cuidar y celebrar. <strong>El cambio empieza con vos.</strong></p>
+          <ul class="wl__dots" aria-hidden="true" style="--k:4">${steps.map((s) => `<li class="bg-${s.color}"></li>`).join("")}</ul>
+          <p class="wl__meta" style="--k:5"><span>9, 10 y 11 de abril de 2027</span><span>Hipódromo de Palermo</span><span>${countTxt}</span></p>
+          <div class="wl__act" style="--k:6">
+            <button type="button" class="wl__go" data-go="top">¡Entrar a Bioferia!</button>
+            <button type="button" class="wl__ag" data-go="agenda">Ver la agenda</button>
           </div>
         </div>
       </div>
@@ -94,6 +81,7 @@
   document.body.append(dlg);
 
   const close = dlg.querySelector("[data-close]");
+  const vid = dlg.querySelector(".wl__vid");
   let timer = 0;
 
   function finish() {
@@ -106,6 +94,7 @@
   function play() {
     if (ready) return;
     ready = true;
+    if (vid) { try { vid.currentTime = 0; } catch (e) { /* aún sin cargar */ } if (calm) vid.pause(); else vid.play().catch(() => {}); }
     dlg.classList.remove("is-playing", "is-final", "is-skip");
     void dlg.offsetWidth;
     dlg.classList.add("is-playing");
@@ -132,7 +121,7 @@
     window.clearTimeout(timer);
     dlg.classList.add("is-leaving");
     const done = () => {
-      dlg.close();
+      dlg.close(); if (vid) vid.pause();
       dlg.classList.remove("is-leaving", "is-playing", "is-final", "is-skip");
       document.documentElement.classList.remove("welcome-open");
       if (target === "agenda") { const a = document.getElementById("agenda"); if (a) a.scrollIntoView({ behavior: root.classList.contains("menos-movimiento") ? "auto" : "smooth" }); }
@@ -175,7 +164,7 @@
   }
 
   // precarga de las imágenes de la secuencia para que no entren tarde
-  const pre = [...new Set(steps.flatMap((s) => s.layers.map((l) => l[0]).concat([s.palabra])).concat([G + "criatura-flores.webp", G + "criatura-ramas.webp"]))];
+  const pre = [...new Set(steps.flatMap((s) => s.layers.map((l) => l[0]).concat([s.palabra])).concat(["assets/collage/fuego.jpg", G + "criatura-ramas.webp"]))];
   const preloaded = Promise.all(pre.map((src) => new Promise((res) => { const i = new Image(); i.onload = i.onerror = res; i.src = src; })));
   // se abre ya mismo, sin esperar la carga: lo primero que se ve es la bienvenida
   if (!forced && (seen() || location.hash)) document.documentElement.classList.remove("welcome-pending");

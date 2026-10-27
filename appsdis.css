@@ -1,0 +1,105 @@
+/* =========================================================
+   APPS · fondo negro (también en modo claro: el vidrio necesita fondo oscuro), celulares con las apps en vivo y marcos de vidrio que se abren hacia los costados
+   ========================================================= */
+section.ap { position: relative; overflow: hidden; background: #000; color: #fff; font-family: "Inter", system-ui, sans-serif; padding-block: clamp(40px, 6vw, 96px); --pw: clamp(220px, 19.5vw, 300px); }
+section.ap::before, section.ap::after, section.ap .tex { display: none !important; }
+.ap__wrap { width: min(1500px, 100% - 32px); margin: 0 auto; }
+
+.ap__head { text-align: center; display: grid; justify-items: center; gap: clamp(10px, 1.4vw, 18px); margin-bottom: clamp(36px, 6vw, 90px); }
+.ap__h { margin: 0; font-weight: 300; font-size: clamp(2rem, 5.2vw, 5rem); line-height: 1; letter-spacing: -.07em; color: #fff; }
+.ap__w { display: inline-block; } .ap__w i { display: inline-block; font-style: normal; }
+.ap__w--p i { font-weight: 700; color: #FF00B2; }
+.ap__sub { margin: 0; max-width: 34em; font-size: clamp(.95rem, 1.35vw, 1.3rem); line-height: 1.3; letter-spacing: -.01em; color: #fff; text-wrap: balance; }
+
+/* escenario: marcos de vidrio detrás, celulares al centro */
+.ap__stage { position: relative; display: grid; place-items: center; min-height: calc(var(--pw) * 2.05); }
+.ap__phones { position: relative; z-index: 2; display: flex; gap: clamp(14px, 2.4vw, 36px); justify-content: center; }
+.ap__panel {
+  position: absolute; z-index: 1; top: 50%; translate: 0 -50%; height: calc(var(--pw) * 1.78); display: flex; align-items: center;
+  border-radius: clamp(26px, 3vw, 44px); background: linear-gradient(160deg, #FFFFFF14, #FFFFFF05 60%, #FFFFFF0D); border: 1px solid #FFFFFF59;
+  -webkit-backdrop-filter: blur(16px); backdrop-filter: blur(16px); box-shadow: 0 30px 60px -34px #000, inset 0 1px 0 #FFFFFF33;
+}
+.ap__panel--l { left: 0; right: calc(50% - var(--pw) * .35); transform-origin: right center; padding-left: clamp(24px, 4.4vw, 70px); }
+.ap__panel--r { right: 0; left: calc(50% - var(--pw) * .35); transform-origin: left center; padding-left: calc(var(--pw) * 1.28); padding-right: clamp(24px, 3vw, 48px); justify-content: flex-start; }
+.ap__panel--l .ap__txt { max-width: calc(50% - var(--pw) - 40px); min-width: 230px; }
+.ap__panel--r .ap__txt { max-width: 100%; }
+
+.ap__txt { display: grid; gap: clamp(8px, 1vw, 14px); align-content: center; height: 100%; padding-block: clamp(22px, 3vw, 44px); }
+.ap__tag { justify-self: start; padding: 2px 12px; border-radius: 999px; background: var(--c); color: #0B0B0B; font-size: clamp(.78rem, 1.1vw, 1.1rem); font-weight: 500; letter-spacing: -.01em; text-transform: uppercase; }
+.ap__panel--r .ap__tag { color: #fff; }
+.ap__t { margin: 0; display: grid; font-weight: 300; font-size: clamp(1.6rem, 3vw, 3rem); line-height: .98; letter-spacing: -.07em; color: #fff; }
+.ap__d { margin: 0; max-width: 24em; font-size: clamp(.82rem, 1.1vw, 1.1rem); line-height: 1.3; letter-spacing: -.01em; color: #fff; }
+.ap__l { list-style: none; margin: clamp(4px, .8vw, 12px) 0 0; padding: 0; display: grid; gap: 2px; }
+.ap__l li { font-size: clamp(.72rem, .95vw, .95rem); font-weight: 500; letter-spacing: -.005em; text-transform: uppercase; color: var(--c); }
+.ap__l li::before { content: "•"; margin-right: .5em; }
+.ap__b { display: grid; justify-items: start; gap: 8px; margin-top: auto; padding-top: clamp(12px, 2vw, 28px); }
+.ap__btn { display: inline-block; padding: 1px 14px; border: 0; border-radius: 999px; font: inherit; font-size: clamp(.85rem, 1.15vw, 1.1rem); letter-spacing: -.01em; text-decoration: none; cursor: pointer; transition: transform .2s; }
+.ap__btn:hover { transform: translateY(-2px); }
+.ap__btn:focus-visible { outline: 2px solid #fff; outline-offset: 3px; }
+.ap__btn--w { background: #fff; color: #0B0B0B; }
+.ap__btn--c { background: var(--c); color: #0B0B0B; } .ap__panel--r .ap__btn--c { color: #fff; }
+.ap__qr { margin: 6px 0 0; padding: 8px; width: 140px; border-radius: 14px; background: #fff; color: #0B0B0B; text-align: center; font-size: .7rem; }
+.ap__qr[hidden] { display: none; }
+.ap__qr img { width: 100%; height: auto; display: block; }
+
+/* celular con la app funcionando */
+.ap__phone { width: var(--pw); }
+.ap__bezel { position: relative; padding: calc(var(--pw) * .032); border-radius: calc(var(--pw) * .17); background: #0c0c0e; box-shadow: 0 0 0 2px #8e8e93, 0 0 0 4px #1c1c1e, 0 36px 60px -22px #000; }
+.ap__notch { position: absolute; z-index: 3; top: calc(var(--pw) * .06); left: 50%; translate: -50% 0; width: 32%; height: calc(var(--pw) * .075); border-radius: 999px; background: #000; pointer-events: none; }
+.ap__screen { position: relative; aspect-ratio: 390 / 844; overflow: hidden; border-radius: calc(var(--pw) * .14); background: #111; }
+.ap__screen iframe { position: absolute; left: 0; top: 0; width: 390px; height: 844px; border: 0; transform: scale(var(--k, .7)); transform-origin: top left; background: #fff; }
+
+/* aparece al scrollear: los celulares suben y los marcos de vidrio se abren desde atrás de cada uno */
+section.ap:not(.ap-in) .ap__w i { opacity: 0; transform: translateY(.4em); filter: blur(10px); }
+section.ap .ap__w i { transition: opacity 1s ease var(--d, 0ms), transform 1.1s cubic-bezier(.2, .8, .2, 1) var(--d, 0ms), filter 1s ease var(--d, 0ms); }
+section.ap:not(.ap-in) .ap__sub { opacity: 0; transform: translateY(14px); }
+section.ap .ap__sub { transition: opacity 1s ease .5s, transform 1s cubic-bezier(.2, .8, .2, 1) .5s; }
+section.ap:not(.ap-in) .ap__phone { opacity: 0; transform: translateY(60px); }
+section.ap .ap__phone { transition: opacity 1s ease .2s, transform 1.2s cubic-bezier(.2, .8, .2, 1) .2s; }
+section.ap .ap__phone + .ap__phone { transition-delay: .4s; }
+section.ap:not(.ap-in) .ap__panel { clip-path: inset(0 0 0 100% round 40px); opacity: 0; }
+section.ap:not(.ap-in) .ap__panel--r { clip-path: inset(0 100% 0 0 round 40px); }
+section.ap .ap__panel { clip-path: inset(0 0 0 0 round 40px); transition: clip-path 1.5s cubic-bezier(.6, 0, .2, 1) .9s, opacity .6s ease .9s; }
+section.ap:not(.ap-in) .ap__txt > * { opacity: 0; transform: translateY(18px); }
+section.ap .ap__txt > * { transition: opacity .9s ease, transform .9s cubic-bezier(.2, .8, .2, 1); }
+section.ap.ap-in .ap__txt > :nth-child(1) { transition-delay: 1.8s; } section.ap.ap-in .ap__txt > :nth-child(2) { transition-delay: 1.95s; }
+section.ap.ap-in .ap__txt > :nth-child(3) { transition-delay: 2.1s; } section.ap.ap-in .ap__txt > :nth-child(4) { transition-delay: 2.25s; }
+section.ap.ap-in .ap__txt > :nth-child(5) { transition-delay: 2.4s; }
+html.menos-movimiento section.ap * { transition: none !important; }
+
+/* celular chico: cada app en su columna, texto arriba y celular abajo */
+@media (max-width: 899px) {
+  .ap__stage { display: grid; gap: 28px; min-height: 0; }
+  .ap__phones { order: 2; }
+  .ap__panel { position: relative; translate: none; top: auto; height: auto; inset: auto; padding: 8px clamp(18px, 5vw, 32px) !important; }
+  .ap__panel--l, .ap__panel--r { left: auto; right: auto; }
+  .ap__panel .ap__txt, .ap__panel--l .ap__txt { max-width: none; min-width: 0; }
+  .ap__stage { grid-template-columns: 1fr; }
+  .ap__phones { flex-direction: column; align-items: center; gap: 28px; --pw: min(70vw, 300px); }
+  section.ap { --pw: min(70vw, 300px); }
+}
+
+/* el texto de cada marco queda fuera del celular que tiene delante */
+@media (min-width: 900px) {
+  .ap__panel--l { padding-right: calc(var(--pw) * .65 + 44px); }
+  .ap__panel--l .ap__txt { max-width: none; min-width: 0; }
+  .ap__panel--r { padding-left: calc(var(--pw) * 1.58); }
+}
+@media (min-width: 900px) { .ap__panel--l { padding-right: calc(var(--pw) * .65 + 80px); } .ap__d { max-width: 21em; } }
+
+.ap__poster { position: absolute; inset: 0; z-index: 2; width: 100%; padding: 0; border: 0; background: #000; cursor: pointer; transition: opacity .5s; }
+.ap__poster img { width: 100%; height: 100%; object-fit: cover; display: block; }
+.ap__poster span { position: absolute; left: 50%; bottom: 7%; translate: -50% 0; padding: 4px 16px; border-radius: 999px; background: #FFFFFFE6; color: #0B0B0B; font-size: clamp(.7rem, .95vw, .9rem); white-space: nowrap; animation: ap-pulso 2.2s ease-in-out infinite; }
+.ap__poster.is-off { opacity: 0; pointer-events: none; }
+@keyframes ap-pulso { 50% { transform: scale(1.06); } }
+
+/* modo claro: fondo blanco, textos negros y marcos de vidrio claros; el modo oscuro queda como está */
+html:not([data-tema="oscuro"]) section.ap { background: #fff; color: #0B0B0B; }
+html:not([data-tema="oscuro"]) .ap__h, html:not([data-tema="oscuro"]) .ap__sub, html:not([data-tema="oscuro"]) .ap__t, html:not([data-tema="oscuro"]) .ap__d { color: #0B0B0B; }
+html:not([data-tema="oscuro"]) .ap__panel { background: linear-gradient(160deg, #0B0B0B0F, #0B0B0B05 60%, #0B0B0B0A); border-color: #0B0B0B40; box-shadow: 0 30px 60px -38px #0B0B0B80, inset 0 1px 0 #FFFFFF; }
+html:not([data-tema="oscuro"]) .ap__l li[style], html:not([data-tema="oscuro"]) .ap__panel--l .ap__l li { color: #00A396; }
+html:not([data-tema="oscuro"]) .ap__btn--w { background: #0B0B0B; color: #fff; }
+html:not([data-tema="oscuro"]) .ap__panel--r .ap__tag, html:not([data-tema="oscuro"]) .ap__panel--r .ap__btn--c { color: #fff; }
+html:not([data-tema="oscuro"]) .ap__btn:focus-visible { outline-color: #0B0B0B; }
+html:not([data-tema="oscuro"]) .ap__qr { box-shadow: 0 0 0 1px #0B0B0B26; }
+.ap__poster span { bottom: auto; top: 12%; }

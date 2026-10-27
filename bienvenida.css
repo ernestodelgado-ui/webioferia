@@ -1,225 +1,259 @@
 /* =========================================================
-   BIENVENIDA · "Activemos el cambio"
-   Mini video con las piezas de la marca (criaturas, texturas, lettering), sin confeti ni formas ajenas.
-   Cinco escenas, una por verbo. Cada escena arranca en --t = .2s + índice × --scene y cada pieza
-   sigue moviéndose mientras la próxima escena la tapa. La tarjeta final se abre en --final-at.
+   BIENVENIDA · "Activemos el cambio" (rediseño con el lenguaje nuevo de la página)
+   Negro, Inter liviana con el énfasis en negrita, rosa de marca, cinco verbos que entran a pantalla completa con su color y su criatura,
+   y una pantalla final con vidrio rosado. Cada escena arranca en .1s + índice × --scene; el final se abre en --final-at.
    ========================================================= */
-
 .welcome-open { overflow: hidden; }
 .welcome {
-  --scene: 1.25s; --final-at: 6.45s;
+  --scene: 1.5s; --final-at: 7.5s; --ease: cubic-bezier(.2, .8, .2, 1);
   border: 0; padding: 0; margin: 0; width: 100vw; max-width: none; height: 100vh; height: 100dvh; max-height: none;
-  background: #0B0B0B; color: var(--white); overflow: hidden; opacity: 1; transition: opacity .35s;
+  background: #000; color: #fff; overflow: hidden; opacity: 1; transition: opacity .4s; font-family: "Inter", system-ui, sans-serif;
 }
-.welcome::backdrop { background: #0B0B0B; }
+.welcome::backdrop { background: #000; }
 .welcome.is-leaving { opacity: 0; }
-.welcome__stage { position: relative; width: 100%; height: 100%; overflow: hidden; }
+.welcome__stage { position: relative; width: 100%; height: 100%; overflow: hidden; background: #000; }
 
-/* ---------- escenas: cortina de papel rasgado que barre la pantalla ---------- */
-.welcome__floods { position: absolute; inset: 0; }
-.flood {
-  --t: calc(.1s + var(--i) * var(--scene));
-  position: absolute; inset: 0; display: grid; place-items: center; overflow: hidden; color: var(--white);
-  clip-path: polygon(-60% 0, -50% 0, -58% 10%, -47% 20%, -59% 30%, -48% 40%, -57% 50%, -46% 60%, -58% 70%, -49% 80%, -59% 90%, -47% 100%, -60% 100%);
+/* marca y marcador */
+.wl__logo { position: absolute; z-index: 8; left: 50%; top: max(20px, env(safe-area-inset-top, 0px)); translate: -50% 0; margin: 0; font-size: clamp(1rem, 1.5vw, 1.4rem); letter-spacing: -.05em; font-weight: 300; color: #fff; mix-blend-mode: difference; }
+.wl__logo b { font-weight: 800; }
+.wl__count { position: absolute; z-index: 8; left: 50%; bottom: max(18px, env(safe-area-inset-bottom, 0px)); translate: -50% 0; margin: 0; font-size: .8rem; letter-spacing: .3em; font-weight: 300; color: #fff; mix-blend-mode: difference; }
+
+/* escenas: cada verbo cubre la pantalla desde abajo, con su color */
+.wl__scenes { position: absolute; inset: 0; }
+.wl__s { position: absolute; inset: 0; z-index: calc(1 + var(--i)); display: grid; align-content: center; justify-items: start; padding: clamp(24px, 7vw, 120px); overflow: hidden; background: var(--c); color: #fff; clip-path: inset(100% 0 0 0); }
+.wl__s--rojo { --c: #FA3710; } .wl__s--turquesa { --c: #01DAC7; color: #0B0B0B; } .wl__s--azul { --c: #005BFC; } .wl__s--amarillo { --c: #FED108; color: #0B0B0B; } .wl__s--rosa { --c: #FF00B2; }
+.welcome.is-playing .wl__s { animation: wl-cubre .6s var(--ease) calc(.1s + var(--i) * var(--scene)) forwards; }
+@keyframes wl-cubre { to { clip-path: inset(0 0 0 0); } }
+
+.wl__art { position: absolute; inset: 0; background: no-repeat right -4% center / auto 120%; mix-blend-mode: multiply; opacity: .9; transform: scale(1.15) rotate(-6deg); transform-origin: 80% 50%; }
+.wl__s--amarillo .wl__art { background-size: cover; background-position: center; }
+.wl__s--rosa .wl__art { background-size: auto 100%; background-position: right 4% center; }
+.welcome.is-playing .wl__art { animation: wl-art calc(var(--scene) + .6s) var(--ease) calc(.1s + var(--i) * var(--scene)) both; }
+@keyframes wl-art { from { transform: scale(1.5) rotate(-14deg); opacity: 0; } 35% { opacity: .9; } to { transform: scale(1.05) rotate(0); opacity: .9; } }
+
+.wl__n, .wl__elem { position: relative; font-size: clamp(.85rem, 1.4vw, 1.3rem); letter-spacing: .02em; font-weight: 400; }
+.wl__n i { font-style: normal; opacity: .7; }
+.wl__elem { margin-top: 6px; padding: 1px 14px; border-radius: 999px; background: #FFFFFF59; text-transform: uppercase; }
+.wl__v { position: relative; display: flex; margin-top: clamp(10px, 2vw, 24px); font-weight: 300; text-transform: uppercase; font-size: clamp(2.6rem, min(14.5vw, 22svh), 15rem); line-height: .9; letter-spacing: -.07em; }
+.wl__v i { font-style: normal; display: inline-block; transform: translateY(90%); opacity: 0; }
+.welcome.is-playing .wl__v i { animation: wl-letra .7s var(--ease) calc(.1s + var(--i) * var(--scene) + .2s + var(--l) * 40ms) both; }
+@keyframes wl-letra { from { transform: translateY(90%); opacity: 0; } to { transform: none; opacity: 1; } }
+.welcome.is-playing .wl__n, .welcome.is-playing .wl__elem { animation: wl-fade .7s ease calc(.1s + var(--i) * var(--scene) + .3s) both; }
+@keyframes wl-fade { from { opacity: 0; transform: translateY(14px); } to { opacity: 1; transform: none; } }
+
+/* barra de avance de cinco tramos */
+.wl__bar { position: absolute; z-index: 9; left: clamp(24px, 7vw, 120px); right: clamp(24px, 7vw, 120px); bottom: clamp(40px, 6vh, 64px); display: flex; gap: 6px; margin: 0; padding: 0; list-style: none; mix-blend-mode: normal; }
+.wl__bar li { flex: 1; height: 4px; border-radius: 2px; background: #FFFFFF40; position: relative; overflow: hidden; }
+.wl__bar li::after { content: ""; position: absolute; inset: 0; background: #fff; transform: scaleX(0); transform-origin: left; }
+.welcome.is-playing .wl__bar li::after { animation: wl-barra var(--scene) linear calc(.1s + var(--i) * var(--scene)) forwards; }
+@keyframes wl-barra { to { transform: scaleX(1); } }
+.welcome.is-final .wl__bar, .welcome.is-skip .wl__bar { opacity: 0; transition: opacity .3s; }
+
+/* pantalla final: negro, texto rosa y vidrio */
+.welcome__final { position: absolute; inset: 0; z-index: 20; display: grid; place-items: center; background: #000; opacity: 0; visibility: hidden; padding: clamp(24px, 6vw, 90px); }
+.welcome.is-playing .welcome__final { animation: wl-final .7s ease var(--final-at) forwards; }
+.welcome.is-final .welcome__final, .welcome.is-skip .welcome__final { opacity: 1; visibility: visible; animation: none; }
+@keyframes wl-final { 0% { opacity: 0; visibility: visible; } 100% { opacity: 1; visibility: visible; } }
+.welcome__final::before { content: ""; position: absolute; inset: 0 -10% 0 auto; width: min(36vw, 540px); background: url("assets/graficas/forma-rosa.png") center / contain no-repeat; opacity: .95; pointer-events: none; transform: translateX(40%); }
+.welcome.is-final .welcome__final::before, .welcome.is-skip .welcome__final::before { transform: none; transition: transform 1.6s var(--ease); }
+.wl__fin { position: relative; z-index: 1; display: grid; justify-items: start; width: min(1100px, 100%); gap: clamp(8px, 1.4vw, 16px); }
+.wl__chip { margin: 0; padding: 1px 14px; border-radius: 999px; background: #FFFFFF26; border: 1px solid #FFFFFF59; -webkit-backdrop-filter: blur(10px); backdrop-filter: blur(10px); font-size: clamp(.8rem, 1.1vw, 1rem); letter-spacing: .02em; text-transform: uppercase; }
+.wl__t { margin: 0; display: grid; line-height: .88; letter-spacing: -.075em; color: #FF00B2; font-size: clamp(3rem, 11vw, 10rem); }
+.wl__t span { font-weight: 300; } .wl__t b { font-weight: 700; }
+.wl__txt { margin: 0; max-width: 30em; font-size: clamp(1rem, 1.5vw, 1.35rem); line-height: 1.3; letter-spacing: -.01em; color: #fff; }
+.wl__txt strong { font-weight: 700; }
+.wl__dots { list-style: none; margin: 4px 0; padding: 0; display: flex; gap: 8px; }
+.wl__dots li { width: 38px; height: 10px; border-radius: 999px; }
+.wl__dots .bg-rojo { background: #FA3710; } .wl__dots .bg-turquesa { background: #01DAC7; } .wl__dots .bg-azul { background: #005BFC; } .wl__dots .bg-amarillo { background: #FED108; } .wl__dots .bg-rosa { background: #FF00B2; }
+.wl__meta { margin: 0; display: flex; flex-wrap: wrap; gap: 4px 22px; font-size: clamp(.85rem, 1.1vw, 1rem); color: #FFFFFFD9; }
+.wl__meta span:last-child { color: #FF00B2; font-weight: 600; }
+.wl__act { display: flex; flex-wrap: wrap; gap: 12px; margin-top: clamp(8px, 1.6vw, 20px); }
+.wl__go, .wl__ag { min-height: 54px; padding: 0 clamp(26px, 3vw, 40px); border-radius: 999px; font: 400 1.1rem "Inter", system-ui, sans-serif; letter-spacing: -.01em; cursor: pointer; transition: transform .2s, filter .2s; }
+.wl__go { color: #fff; border: 1.5px solid #FFFFFFD9; background: radial-gradient(circle at 30% 22%, #FFFFFFB3 0%, #FF4DC4B3 30%, #FF00B2D9 70%, #D6008FE6 100%); -webkit-backdrop-filter: blur(14px); backdrop-filter: blur(14px); box-shadow: 0 20px 50px -14px #FF00B2, inset 0 2px 0 #FFFFFFB3, inset 0 -10px 20px #B3007A55; text-shadow: 0 1px 10px #8A005E99; }
+.wl__ag { color: #fff; border: 1px solid #FFFFFF73; background: #FFFFFF1F; -webkit-backdrop-filter: blur(14px); backdrop-filter: blur(14px); }
+.wl__go:hover, .wl__ag:hover { transform: translateY(-2px); filter: brightness(1.1); }
+.wl__go:focus-visible, .wl__ag:focus-visible { outline: 3px solid #fff; outline-offset: 3px; }
+
+/* la pantalla final entra por piezas */
+.wl__fin > * { opacity: 0; transform: translateY(26px); filter: blur(8px); }
+.welcome.is-playing .wl__fin > * { animation: wl-pieza .9s var(--ease) calc(var(--final-at) + .15s + var(--k, 0) * .12s) forwards; }
+.welcome.is-final .wl__fin > *, .welcome.is-skip .wl__fin > * { opacity: 1; transform: none; filter: none; animation: none; }
+@keyframes wl-pieza { to { opacity: 1; transform: none; filter: blur(0); } }
+
+/* botones de arriba */
+.welcome__close, .welcome__calm {
+  position: absolute; z-index: 30; top: max(14px, env(safe-area-inset-top, 0px)); min-height: 38px; padding: 0 16px; border-radius: 999px; cursor: pointer; font: 400 .85rem "Inter", system-ui, sans-serif;
+  color: #fff; background: #FFFFFF26; border: 1px solid #FFFFFF59; -webkit-backdrop-filter: blur(10px); backdrop-filter: blur(10px); transition: background .2s;
 }
-.flood.bg-amarillo { color: var(--ink); }
-.welcome.is-playing .flood.wipe-l { animation: wipe-l .8s cubic-bezier(.65, 0, .25, 1) var(--t) forwards; }
-.welcome.is-playing .flood.wipe-r { animation: wipe-r .8s cubic-bezier(.65, 0, .25, 1) var(--t) forwards; }
-@keyframes wipe-l { to { clip-path: polygon(-60% 0, 152% 0, 144% 10%, 156% 20%, 143% 30%, 155% 40%, 145% 50%, 157% 60%, 146% 70%, 154% 80%, 144% 90%, 156% 100%, -60% 100%); } }
-.flood.wipe-r { clip-path: polygon(160% 0, 150% 0, 158% 10%, 147% 20%, 159% 30%, 148% 40%, 157% 50%, 146% 60%, 158% 70%, 149% 80%, 159% 90%, 147% 100%, 160% 100%); }
-@keyframes wipe-r { to { clip-path: polygon(160% 0, -52% 0, -44% 10%, -56% 20%, -43% 30%, -55% 40%, -45% 50%, -57% 60%, -46% 70%, -54% 80%, -44% 90%, -56% 100%, 160% 100%); } }
-.welcome.is-skip .flood { animation: none !important; visibility: hidden; }
-
-/* el mundo de cada escena hace un travelling lento, como una cámara */
-.flood__world { position: absolute; inset: 0; overflow: hidden; }
-.welcome.is-playing .flood__world { animation: camara 3.4s cubic-bezier(.2, .6, .3, 1) var(--t) both; }
-@keyframes camara { from { transform: scale(1.14) rotate(.6deg); } to { transform: scale(1) rotate(0deg); } }
-.layer { position: absolute; max-width: none; pointer-events: none; user-select: none; will-change: transform; }
-
-/* cartel gigante del verbo en contorno, corre detrás */
-.flood__marquee { position: absolute; z-index: 0; left: 0; right: 0; top: 50%; translate: 0 -50%; overflow: hidden; pointer-events: none; opacity: .3; }
-.flood__marquee span { display: inline-block; white-space: nowrap; font-size: clamp(8rem, 46vh, 26rem); font-weight: 900; line-height: .85; letter-spacing: -.05em; text-transform: uppercase; color: transparent; -webkit-text-stroke: 2px #fff; }
-.flood.bg-amarillo .flood__marquee span { -webkit-text-stroke-color: #0B0B0B; }
-.welcome.is-playing .flood__marquee span { animation: marquee 7s linear var(--t) forwards; }
-.flood.wipe-r .flood__marquee span { animation-direction: reverse; }
-@keyframes marquee { from { transform: translateX(0); } to { transform: translateX(-45%); } }
-
-/* texturas de fondo en movimiento */
-.l-tex { inset: -12%; width: 124%; height: 124%; object-fit: cover; }
-.l-tex--ink { mix-blend-mode: multiply; filter: grayscale(1) contrast(1.3) brightness(1.15); opacity: .5; }
-.l-tex--screen { mix-blend-mode: screen; filter: grayscale(1) contrast(1.4); opacity: .22; }
-.l-tex--drift { inset: 0; width: 170%; height: auto; object-fit: contain; opacity: .38; left: -10%; top: 4%; }
-.welcome.is-playing .l-tex { animation: pan 7s linear var(--t) forwards; }
-@keyframes pan { from { translate: 0 0; } to { translate: -7% -5%; } }
-
-/* HACER · las flores crecen y se mecen */
-.l-flor { height: 92%; width: auto; mix-blend-mode: multiply; }
-.l-flor--a { right: -4%; bottom: -6%; transform-origin: 70% 100%; }
-.l-flor--b { left: -12%; bottom: -16%; height: 64%; transform: scaleX(-1); transform-origin: 30% 100%; opacity: .9; }
-.welcome.is-playing .l-flor--a { animation: crecer 1.15s cubic-bezier(.2, 1.1, .3, 1) var(--t) backwards, mecer 3.2s ease-in-out calc(var(--t) + 1.15s) infinite alternate; }
-.welcome.is-playing .l-flor--b { animation: crecer 1.2s cubic-bezier(.2, 1.1, .3, 1) calc(var(--t) + .25s) backwards, mecer 3.6s ease-in-out calc(var(--t) + 1.45s) infinite alternate-reverse; }
-@keyframes crecer { from { scale: .12; rotate: -14deg; opacity: 0; } }
-@keyframes mecer { from { rotate: -2.5deg; } to { rotate: 2.5deg; } }
-.l-spin { width: min(24vw, 260px); height: auto; }
-.l-spin--a { left: 5%; top: 7%; }
-.l-spin--b { right: -4%; top: -6%; width: min(34vw, 420px); filter: brightness(2) saturate(.15); opacity: .7; }
-.welcome.is-playing .l-spin { animation: pop-spin .9s cubic-bezier(.2, 1.5, .4, 1) calc(var(--t) + .3s) backwards, girar 9s linear calc(var(--t) + .3s) infinite; }
-@keyframes pop-spin { from { scale: 0; opacity: 0; } }
-@keyframes girar { to { rotate: 360deg; } }
-
-/* CONECTAR · las libélulas cruzan la pantalla con su rumbo */
-.l-fly { height: auto; }
-.l-fly--a { width: min(50vw, 560px); left: -30%; bottom: -14%; rotate: -28deg; }
-.l-fly--b { width: min(28vw, 320px); right: -22%; top: 62%; rotate: 205deg; }
-.l-fly--c { width: min(16vw, 200px); left: 34%; bottom: -24%; rotate: -8deg; }
-.welcome.is-playing .l-fly--a { animation: vuelo-a 3.2s cubic-bezier(.3, .55, .4, 1) var(--t) forwards; }
-.welcome.is-playing .l-fly--b { animation: vuelo-b 3s cubic-bezier(.3, .55, .4, 1) calc(var(--t) + .3s) forwards; }
-.welcome.is-playing .l-fly--c { animation: vuelo-c 2.8s cubic-bezier(.3, .55, .4, 1) calc(var(--t) + .55s) forwards; }
-@keyframes vuelo-a { 0% { translate: 0 0; rotate: -28deg; } 55% { rotate: -10deg; } 100% { translate: 150vw -85vh; rotate: 14deg; } }
-@keyframes vuelo-b { 0% { translate: 0 0; rotate: 205deg; } 60% { rotate: 190deg; } 100% { translate: -150vw -60vh; rotate: 178deg; } }
-@keyframes vuelo-c { 0% { translate: 0 0; rotate: -8deg; } 100% { translate: 40vw -120vh; rotate: 16deg; } }
-
-/* TRANSFORMAR · el caracol gira y se abre */
-.l-nau { height: auto; mix-blend-mode: screen; }
-.l-nau--a { width: min(120vw, 1300px); right: -34%; top: -26%; transform: scaleX(-1); }
-.l-nau--b { width: min(52vw, 560px); left: -14%; bottom: -12%; opacity: .85; }
-.welcome.is-playing .l-nau--a { animation: nau-a 3.6s cubic-bezier(.2, .8, .3, 1) var(--t) both; }
-.welcome.is-playing .l-nau--b { animation: nau-b 3.6s cubic-bezier(.2, .8, .3, 1) calc(var(--t) + .2s) both; }
-@keyframes nau-a { from { scale: .55; rotate: -40deg; opacity: 0; } to { scale: 1.08; rotate: 22deg; opacity: 1; } }
-@keyframes nau-b { from { scale: .4; rotate: 50deg; opacity: 0; } to { scale: 1; rotate: -18deg; opacity: .85; } }
-
-/* CUIDAR · las ramas brotan desde abajo */
-.l-grow { width: auto; mix-blend-mode: multiply; }
-.l-grow--a { left: -6%; bottom: -12%; height: 112%; transform-origin: 50% 100%; opacity: .75; }
-.l-grow--b { right: -10%; bottom: -18%; height: 92%; transform: scaleX(-1); transform-origin: 50% 100%; opacity: .6; }
-.welcome.is-playing .l-grow--a { animation: brotar 1.5s cubic-bezier(.2, .9, .3, 1) var(--t) backwards, mecer 4s ease-in-out calc(var(--t) + 1.5s) infinite alternate; }
-.welcome.is-playing .l-grow--b { animation: brotar 1.6s cubic-bezier(.2, .9, .3, 1) calc(var(--t) + .3s) backwards, mecer 4.6s ease-in-out calc(var(--t) + 1.9s) infinite alternate-reverse; }
-@keyframes brotar { from { scale: 1 .08; opacity: 0; } }
-
-/* CELEBRAR · el BIO FERIA estalla, el lettering sube */
-.l-grunge { left: 50%; top: 50%; translate: -50% -50%; width: min(120vw, 1500px); height: auto; opacity: .2; mix-blend-mode: multiply; rotate: 5deg; }
-.l-pop { left: 50%; top: 50%; translate: -50% -50%; width: min(115vw, 1400px); height: auto; opacity: .55; }
-.welcome.is-playing .l-pop { animation: estallar 1.3s cubic-bezier(.2, 1.5, .4, 1) var(--t) backwards, bambolear 3s ease-in-out calc(var(--t) + 1.3s) infinite alternate; }
-@keyframes estallar { from { scale: .15; rotate: -25deg; opacity: 0; } }
-@keyframes bambolear { from { rotate: -4deg; scale: .98; } to { rotate: 3deg; scale: 1.03; } }
-.welcome.is-playing .l-grunge { animation: pop-in 1s ease-out var(--t) backwards; }
-@keyframes pop-in { from { opacity: 0; scale: .8; } }
-.l-activa { left: 50%; bottom: 10%; translate: -50% 0; width: min(64vw, 640px); height: auto; filter: drop-shadow(0 8px 24px #0B0B0B40); }
-.welcome.is-playing .l-activa { animation: subir 1s cubic-bezier(.2, 1.4, .4, 1) calc(var(--t) + .55s) backwards; }
-@keyframes subir { from { translate: -50% 120%; rotate: -6deg; opacity: 0; } }
-
-/* ---------- el verbo y su elemento, al frente ---------- */
-.flood__txt { position: relative; z-index: 3; display: grid; justify-items: center; gap: 8px; text-align: center; padding-inline: 16px; }
-.flood__elem { height: clamp(34px, 6vw, 60px); width: auto; filter: drop-shadow(0 2px 10px #0B0B0B33); }
-.flood.bg-amarillo .flood__elem { filter: brightness(0); }
-.flood__verbo { font-size: clamp(2.4rem, min(13vw, calc(92vw / (var(--len, 8) * .76))), 10rem); max-width: 96vw; white-space: nowrap; font-weight: 900; line-height: .9; letter-spacing: -.05em; text-transform: uppercase; text-shadow: 0 6px 40px #0B0B0B3d; }
-.flood.bg-amarillo .flood__verbo { text-shadow: none; }
-.flood__verbo i { display: inline-block; font-style: normal; }
-.welcome.is-playing .flood__verbo i { animation: letra-in .65s cubic-bezier(.2, 1.7, .4, 1) calc(var(--t) + .35s + var(--l) * .045s) backwards; }
-.welcome.is-playing .flood__elem { animation: elem-in .5s ease-out calc(var(--t) + .5s) backwards; }
-@keyframes letra-in { from { opacity: 0; transform: translateY(.7em) rotate(calc((var(--l) - 4) * 7deg)) scale(.4); } }
-@keyframes elem-in { from { opacity: 0; transform: translateY(-14px); } }
-.welcome.is-playing .flood__txt { animation: txt-zoom 1.1s cubic-bezier(.2, .9, .3, 1) var(--t) backwards; }
-@keyframes txt-zoom { from { transform: scale(1.16); } }
-
-/* barra de avance: una tira por color */
-.welcome__steps { position: absolute; z-index: 6; left: 50%; bottom: max(22px, env(safe-area-inset-bottom, 0px)); translate: -50% 0; display: flex; gap: 6px; margin: 0; padding: 8px 12px; list-style: none; background: #FFFFFFE6; clip-path: polygon(0 0, calc(100% - 10px) 0, 100% 10px, 100% 100%, 10px 100%, 0 calc(100% - 10px)); }
-.welcome__steps li { width: 26px; height: 8px; opacity: .28; scale: 1 .8; }
-.welcome.is-playing .welcome__steps li { animation: paso .4s ease-out calc(.1s + var(--i) * var(--scene)) forwards; }
-@keyframes paso { to { opacity: 1; scale: 1 1.2; } }
-.welcome.is-final .welcome__steps, .welcome.is-skip .welcome__steps { display: none; }
-
-/* ---------- tarjeta final, sobre papel ---------- */
-.welcome__final {
-  position: absolute; inset: 0; display: grid; place-items: center; overflow: hidden; background: var(--paper); color: var(--ink);
-  clip-path: polygon(-60% 0, -50% 0, -58% 10%, -47% 20%, -59% 30%, -48% 40%, -57% 50%, -46% 60%, -58% 70%, -49% 80%, -59% 90%, -47% 100%, -60% 100%); padding: clamp(16px, 4vw, 48px);
-}
-.welcome.is-playing .welcome__final { animation: wipe-l .9s cubic-bezier(.65, 0, .25, 1) var(--final-at) forwards; }
-.welcome.is-skip .welcome__final, .welcome.is-final .welcome__final { clip-path: none; animation: none; }
-
-.wf__tex { position: absolute; max-width: none; pointer-events: none; user-select: none; }
-.wf__tex--a { left: 50%; top: 52%; translate: -50% -50%; width: min(120%, 1500px); opacity: .17; rotate: -4deg; mix-blend-mode: multiply; }
-.wf__tex--b { right: -9%; bottom: -12%; height: 70%; width: auto; opacity: .55; mix-blend-mode: multiply; transform-origin: 70% 100%; animation: mecer 5s ease-in-out infinite alternate; }
-.wf__tex--c { left: -3%; top: 5%; height: 34%; width: auto; opacity: .85; rotate: -12deg; animation: flotar 7s ease-in-out infinite alternate; }
-.wf__tex--d { left: -6%; bottom: -14%; height: 64%; width: auto; opacity: .3; mix-blend-mode: multiply; transform-origin: 50% 100%; animation: mecer 6s ease-in-out infinite alternate-reverse; }
-@keyframes flotar { to { translate: 2vw 3vh; rotate: -4deg; } }
-
-.wf__card { position: relative; z-index: 2; display: grid; justify-items: center; gap: clamp(10px, 2vh, 20px); text-align: center; max-width: 880px; }
-.wf__chip { display: inline-block; margin: 0; padding: 7px 16px; background: var(--turquesa); color: var(--ink); font-size: .78rem; font-weight: 800; letter-spacing: .14em; text-transform: uppercase; clip-path: polygon(0 0, calc(100% - 12px) 0, 100% 12px, 100% 100%, 12px 100%, 0 calc(100% - 12px)); }
-.wf__title { margin: 0; display: flex; flex-wrap: wrap; justify-content: center; gap: 0 .22em; font-size: clamp(3rem, 11vw, 8.4rem); font-weight: 900; line-height: .9; letter-spacing: -.055em; }
-.wf__w { display: inline-block; }
-.wf__w--em { font-style: italic; color: var(--rosa); }
-.wf__w--em i { font-style: normal; color: var(--ink); }
-.wf__text { margin: 0; max-width: 34ch; font-size: clamp(1.05rem, 2.2vw, 1.35rem); line-height: 1.35; color: var(--ink-2); }
-.wf__text strong { color: var(--ink); }
-.wf__dots { display: flex; gap: 6px; margin: 0; padding: 0; list-style: none; }
-.wf__dots li { width: 34px; height: 10px; }
-.wf__meta { margin: 0; display: flex; flex-wrap: wrap; justify-content: center; gap: 6px 18px; font-weight: 700; font-size: .95rem; letter-spacing: .02em; }
-.wf__meta span::before { content: ""; display: inline-block; width: 12px; height: 4px; margin-right: 9px; background: var(--rosa); vertical-align: 3px; }
-.wf__meta strong { color: var(--rosa); }
-.wf__actions { display: flex; flex-wrap: wrap; justify-content: center; gap: 12px; margin-top: 6px; }
-.welcome .btn--go { background: var(--rosa); color: var(--white); border-color: var(--rosa); text-shadow: none; }
-.welcome .btn--soft { background: var(--white); color: var(--ink); }
-
-/* la tarjeta se arma después de abrirse el papel */
-.welcome.is-playing:not(.is-skip) .wf__chip, .welcome.is-playing:not(.is-skip) .wf__w, .welcome.is-playing:not(.is-skip) .wf__text,
-.welcome.is-playing:not(.is-skip) .wf__dots, .welcome.is-playing:not(.is-skip) .wf__meta, .welcome.is-playing:not(.is-skip) .wf__actions {
-  animation: wf-in .7s cubic-bezier(.2, 1.3, .4, 1) calc(var(--final-at) + .35s + var(--k) * .1s) backwards;
-}
-@keyframes wf-in { from { opacity: 0; transform: translateY(34px) rotate(1.5deg) scale(.94); } }
-
-/* ---------- botón de saltar / cerrar y acceso desde el pie ---------- */
-.welcome__close {
-  position: absolute; z-index: 10; top: max(16px, env(safe-area-inset-top, 0px)); right: max(16px, env(safe-area-inset-right, 0px));
-  min-height: 44px; padding: 0 20px; border: 0; cursor: pointer; font: inherit; font-weight: 800;
-  background: var(--white); color: var(--ink); clip-path: polygon(0 0, calc(100% - 10px) 0, 100% 10px, 100% 100%, 10px 100%, 0 calc(100% - 10px)); transition: transform .2s;
-}
-.welcome__close:hover { transform: translateY(-2px); }
-.welcome__close:focus-visible, .welcome .btn:focus-visible { outline: 3px solid var(--ink); outline-offset: 3px; }
+.welcome__close { right: max(16px, env(safe-area-inset-right, 0px)); } .welcome__calm { left: max(16px, env(safe-area-inset-left, 0px)); }
+.welcome__close:hover, .welcome__calm:hover { background: #FFFFFF40; }
+.welcome__close:focus-visible, .welcome__calm:focus-visible { outline: 3px solid #fff; outline-offset: 3px; }
 .welcome__again { margin-left: 18px; border: 0; background: none; padding: 6px 0; font: inherit; color: inherit; text-decoration: underline; text-underline-offset: 3px; cursor: pointer; }
 
+/* saltar: se ve la pantalla final directo */
+.welcome.is-skip .wl__scenes { visibility: hidden; }
+
+/* versión calma: cada verbo aparece quieto con un fundido; la pantalla final queda fija */
+.welcome.calm .wl__s { clip-path: none; opacity: 0; }
+.welcome.calm.is-playing .wl__s { animation: wl-fade-in .6s ease calc(.1s + var(--i) * var(--scene)) forwards !important; }
+@keyframes wl-fade-in { to { opacity: 1; } }
+.welcome.calm .wl__art, .welcome.calm .wl__v i, .welcome.calm .wl__n, .welcome.calm .wl__elem { animation: none !important; opacity: 1; transform: none; }
+.welcome.calm .wl__bar li::after { animation: none !important; }
+.welcome.calm .welcome__final::before { transition: none; transform: none; }
+.welcome.calm .wl__fin > * { animation: none !important; }
+.welcome.calm.is-playing .welcome__final { animation: wl-fade-in .7s ease var(--final-at) forwards !important; }
+
 @media (max-width: 640px) {
-  .flood__verbo { font-size: clamp(2.2rem, min(17vw, calc(92vw / (var(--len, 8) * .76))), 5.4rem); }
-  .l-flor--a { height: 66%; } .l-flor--b { height: 46%; }
-  .l-fly--a { width: 70vw; } .l-nau--a { width: 170vw; right: -60%; } .l-nau--b { width: 80vw; }
-  .l-grow--a { height: 84%; } .l-grow--b { height: 70%; }
-  .l-pop, .l-grunge { width: 190vw; } .l-activa { width: 82vw; }
-  .wf__title { font-size: clamp(2.8rem, 15vw, 4.6rem); }
-  .wf__tex--b { height: 42%; right: -22%; } .wf__tex--c { height: 20%; } .wf__tex--d { height: 38%; }
+  .wl__v { font-size: clamp(2.2rem, min(17vw, calc(88vw / (var(--len, 8) * .6))), 6rem); }
+  .wl__art { background-size: auto 70%; background-position: center bottom; }
+  .wl__t { font-size: clamp(2.8rem, 15vw, 4.6rem); }
+  .welcome__final::before { inset: auto -30% -8% auto; width: 90vw; height: 55%; }
 }
-
-/* sin animaciones: se ve directamente la tarjeta final (salvo que se fuerce con ?bienvenida=anim) */
-
-/* HACER: la trama de fondo más suave, para que el rojo siga siendo rojo */
-.l-tex--ink { opacity: .26; filter: grayscale(1) contrast(1.2) brightness(1.3); }
+@media (max-width: 640px) { .wl__logo { display: none; } }
+.wl__n, .wl__elem { display: none !important; }
 
 /* =========================================================
-   VERSIÓN CALMA · para quien tiene "reducir movimiento"
-   Cada escena aparece con un fundido suave y queda quieta: sin cortinas, vuelos, giros ni rebotes.
+   V3 · partes de la imagen de la campaña según el elemento, y tipografía con mucho más movimiento
    ========================================================= */
-@keyframes calm-in { from { opacity: 0; } to { opacity: 1; } }
-.welcome.calm .flood { clip-path: none; opacity: 0; }
-.welcome.calm.is-playing .flood { animation: calm-in .6s ease var(--t) forwards !important; }
-.welcome.calm .flood *, .welcome.calm .flood *::before { animation: none !important; transition: none !important; }
-.welcome.calm .flood__world { transform: none !important; }
-.welcome.calm .layer { animation: none !important; }
-.welcome.calm .welcome__final { clip-path: none; opacity: 0; }
-.welcome.calm.is-playing .welcome__final { animation: calm-in .7s ease var(--final-at) forwards !important; }
-.welcome.calm.is-final .welcome__final, .welcome.calm.is-skip .welcome__final { opacity: 1; animation: none !important; }
-.welcome.calm .wf__chip, .welcome.calm .wf__w, .welcome.calm .wf__text, .welcome.calm .wf__dots, .welcome.calm .wf__meta, .welcome.calm .wf__actions, .welcome.calm .wf__tex { animation: none !important; }
-.welcome.calm.is-skip .flood { visibility: hidden; opacity: 0; animation: none !important; }
+.wl__art { display: none; }
+.wl__s { justify-items: start; }
+/* panel con el recorte del collage: grande, a la derecha, con la esquina inferior izquierda redonda como las tarjetas de la página */
+.wl__pic { position: absolute; right: clamp(16px, 4vw, 64px); top: 50%; translate: 0 -50%; width: min(36vw, 520px); aspect-ratio: 3 / 4; max-height: 78svh; overflow: hidden; border-radius: 0 0 0 clamp(60px, 10vw, 150px); box-shadow: 0 40px 80px -30px #00000099; }
+.wl__pic img { width: 100%; height: 100%; object-fit: cover; display: block; transform: scale(1.35); }
+.welcome.is-playing .wl__pic { animation: wl-pic-in .9s var(--ease) calc(.1s + var(--i) * var(--scene) + .15s) both; }
+.welcome.is-playing .wl__pic img { animation: wl-kenburns calc(var(--scene) + 1s) ease-out calc(.1s + var(--i) * var(--scene)) both; }
+@keyframes wl-pic-in { from { clip-path: inset(100% 0 0 0); transform: translateY(40px) rotate(4deg); } to { clip-path: inset(0 0 0 0); transform: none; } }
+@keyframes wl-kenburns { from { transform: scale(1.7) translateX(8%); } to { transform: scale(1.08) translateX(0); } }
 
-/* botón para elegir menos movimiento, arriba a la izquierda */
-.welcome__calm {
-  position: absolute; z-index: 10; top: max(16px, env(safe-area-inset-top, 0px)); left: max(16px, env(safe-area-inset-left, 0px));
-  min-height: 40px; padding: 0 16px; border: 0; cursor: pointer; font: inherit; font-weight: 700; font-size: .85rem;
-  background: #FFFFFFE6; color: var(--ink); clip-path: polygon(0 0, calc(100% - 10px) 0, 100% 10px, 100% 100%, 10px 100%, 0 calc(100% - 10px)); transition: transform .2s;
-}
-.welcome__calm:hover { transform: translateY(-2px); }
-.welcome__calm:focus-visible { outline: 3px solid var(--ink); outline-offset: 3px; }
+/* palabra gigante repetida que corre detrás, en contorno */
+.wl__mq { position: absolute; left: 0; right: 0; top: 50%; translate: 0 -50%; overflow: hidden; white-space: nowrap; pointer-events: none; opacity: .0; font-weight: 700; font-size: clamp(8rem, 30svh, 22rem); line-height: 1; letter-spacing: -.07em; text-transform: uppercase; color: transparent; -webkit-text-stroke: 2px #FFFFFF73; }
+.wl__s--turquesa .wl__mq, .wl__s--amarillo .wl__mq { -webkit-text-stroke-color: #0B0B0B55; }
+.wl__mq span { display: inline-block; padding-left: 4vw; animation: wl-mq 6s linear infinite; }
+@keyframes wl-mq { from { transform: translateX(0); } to { transform: translateX(-50%); } }
+.welcome.is-playing .wl__mq { animation: wl-fade .8s ease calc(.1s + var(--i) * var(--scene) + .3s) forwards; opacity: 0; }
+.wl__s:nth-child(even) .wl__mq span { animation-direction: reverse; }
 
-/* ---------- pantalla de carga: la marca, mientras llegan las piezas ---------- */
-.welcome__splash { position: absolute; inset: 0; z-index: 5; display: grid; place-items: center; background: #0B0B0B; transition: opacity .35s; pointer-events: none; }
-.welcome__splash span { display: block; width: min(62vw, 440px); aspect-ratio: 830 / 145; background: #fff; -webkit-mask: url("assets/logos/bioferia-wordmark.svg") center / contain no-repeat; mask: url("assets/logos/bioferia-wordmark.svg") center / contain no-repeat; animation: splash-pulse 1.1s ease-in-out infinite alternate; }
-@keyframes splash-pulse { from { opacity: .45; transform: scale(.97); } to { opacity: 1; transform: scale(1); } }
-.welcome.is-playing .welcome__splash, .welcome.is-skip .welcome__splash, .welcome.is-final .welcome__splash { opacity: 0; visibility: hidden; transition: opacity .3s, visibility 0s .3s; }
+/* la palabra: letras que entran girando y rebotan, y después flotan en onda sin parar */
+.wl__v { z-index: 2; mix-blend-mode: normal; font-weight: 800; letter-spacing: -.06em; font-size: clamp(2.6rem, min(15vw, 24svh), 17rem); text-shadow: 0 8px 40px #00000033; }
+.wl__v i { transform: translateY(110%) rotate(12deg) scale(.7); transform-origin: 0 100%; }
+.welcome.is-playing .wl__v i { animation: wl-letra3 .8s cubic-bezier(.2, 1.4, .3, 1) calc(.1s + var(--i) * var(--scene) + .15s + var(--l) * 55ms) both, wl-onda 2.6s ease-in-out calc(.1s + var(--i) * var(--scene) + 1s + var(--l) * 90ms) infinite; }
+@keyframes wl-letra3 { from { transform: translateY(110%) rotate(12deg) scale(.7); opacity: 0; } to { transform: none; opacity: 1; } }
+@keyframes wl-onda { 0%, 100% { translate: 0 0; rotate: 0deg; } 50% { translate: 0 -.07em; rotate: -2deg; } }
+
+/* cada escena entra con un pequeño golpe de pantalla */
+.welcome.is-playing .wl__s { animation: wl-cubre .55s var(--ease) calc(.1s + var(--i) * var(--scene)) forwards, wl-golpe .5s steps(2, end) calc(.1s + var(--i) * var(--scene) + .5s) 1; }
+@keyframes wl-golpe { 0% { filter: none; } 50% { filter: drop-shadow(6px 0 0 #FF00B2) drop-shadow(-6px 0 0 #01DAC7); } 100% { filter: none; } }
+
+/* final: el título respira y cada línea se desliza */
+.welcome.is-final .wl__t span { animation: wl-desliza 5s ease-in-out infinite alternate; }
+.welcome.is-final .wl__t b { animation: wl-desliza 5s ease-in-out -2.5s infinite alternate-reverse; }
+@keyframes wl-desliza { from { translate: -.6vw 0; } to { translate: .6vw 0; } }
+
+.welcome.calm .wl__mq, .welcome.calm .wl__pic, .welcome.calm .wl__pic img, .welcome.calm .wl__v i { animation: none !important; opacity: 1; }
+.welcome.calm .wl__mq { display: none; }
+@media (max-width: 640px) { .wl__pic { width: 62vw; top: auto; bottom: 8vh; translate: 0; right: 4vw; opacity: .95; } .wl__v { font-size: clamp(2.2rem, min(17vw, calc(88vw / (var(--len, 8) * .6))), 6rem); position: relative; z-index: 3; } }
+.welcome__final::before { display: none; }
+
+/* =========================================================
+   V4 · la imagen de la campaña COMPLETA en cada escena; la cámara se acerca a la zona de cada elemento
+   ========================================================= */
+.wl__pic, .wl__mq { display: none !important; }
+.wl__full { position: absolute; inset: 0; overflow: hidden; background: #000; }
+.wl__full img { width: 100%; height: 100%; object-fit: cover; object-position: var(--o, 50% 50%); transform-origin: var(--o, 50% 50%); transform: scale(1.02); display: block; }
+.welcome.is-playing .wl__full img { animation: wl-camara calc(var(--scene) + 1.2s) cubic-bezier(.3, .6, .2, 1) calc(.1s + var(--i) * var(--scene)) both; }
+@keyframes wl-camara { from { transform: scale(1); filter: saturate(.8); } to { transform: scale(1.6); filter: saturate(1.2); } }
+/* velo de oscuridad suave para que la palabra se lea sobre cualquier parte del collage */
+.wl__s::after { content: ""; position: absolute; inset: 0; background: linear-gradient(90deg, #00000073 0%, #00000000 62%); pointer-events: none; }
+/* la palabra va sobre una barra con el color del elemento */
+.wl__v { background: var(--c); color: #fff; padding: .02em .22em .06em; border-radius: 999px; box-shadow: 0 30px 70px -20px #000000B3; text-shadow: none; }
+.wl__s--turquesa .wl__v, .wl__s--amarillo .wl__v { color: #0B0B0B; }
+.wl__v { z-index: 3; }
+@media (max-width: 640px) { .wl__v { padding: 0 .18em .04em; } }
+.wl__v { display: inline-flex; width: max-content; max-width: 100%; }
+
+/* =========================================================
+   V5 · sin soporte, palabras al medio y una animación distinta para cada verbo
+   ========================================================= */
+.wl__s { justify-items: center; align-content: center; text-align: center; padding: clamp(16px, 4vw, 60px); }
+.wl__s::after { background: radial-gradient(ellipse at center, #00000080 0%, #00000000 70%); }
+.wl__v, .wl__s--turquesa .wl__v, .wl__s--amarillo .wl__v { background: none; box-shadow: none; padding: 0; border-radius: 0; color: #fff; justify-self: center; margin: 0; font-size: clamp(3rem, min(17vw, 28svh), 20rem); text-shadow: 0 6px 50px #000000B3, 0 2px 10px #00000066; }
+.wl__v i { transform-origin: 50% 100%; }
+@keyframes wl-sigue { 0%, 100% { translate: 0 0; rotate: 0deg; } 50% { translate: 0 -.05em; rotate: -1.5deg; } }
+.welcome.is-playing .wl__s .wl__v i { animation-delay: calc(.1s + var(--i) * var(--scene) + .15s + var(--l) * 60ms), calc(.1s + var(--i) * var(--scene) + 1.2s + var(--l) * 90ms); animation-name: var(--an), wl-sigue; animation-duration: .9s, 2.8s; animation-timing-function: cubic-bezier(.2, 1.3, .3, 1), ease-in-out; animation-iteration-count: 1, infinite; animation-fill-mode: both, none; }
+
+/* 1 · HACER: cae desde arriba como un sello y rebota */
+.wl__s:nth-child(1) { --an: wl-sello; }
+@keyframes wl-sello { 0% { transform: translateY(-160%) rotate(-14deg) scale(1.4); opacity: 0; } 60% { transform: translateY(6%) rotate(2deg) scale(.96); opacity: 1; } 100% { transform: none; opacity: 1; } }
+/* 2 · CONECTAR: las letras vienen de los dos costados y se encuentran */
+.wl__s:nth-child(2) { --an: wl-une; }
+.wl__s:nth-child(2) .wl__v i:nth-child(odd) { --dir: -1; } .wl__s:nth-child(2) .wl__v i:nth-child(even) { --dir: 1; }
+@keyframes wl-une { 0% { transform: translateX(calc(var(--dir, 1) * 70vw)) skewX(calc(var(--dir, 1) * -25deg)); opacity: 0; filter: blur(14px); } 70% { opacity: 1; } 100% { transform: none; opacity: 1; filter: blur(0); } }
+/* 3 · TRANSFORMAR: giran en el aire (vuelta completa) y se enfocan */
+.wl__s:nth-child(3) { --an: wl-gira; }
+@keyframes wl-gira { 0% { transform: perspective(600px) rotateX(-540deg) scale(.3); opacity: 0; filter: blur(16px); } 60% { opacity: 1; } 100% { transform: none; opacity: 1; filter: blur(0); } }
+/* 4 · CUIDAR: crecen desde el suelo como plantas */
+.wl__s:nth-child(4) { --an: wl-crece; }
+@keyframes wl-crece { 0% { transform: scaleY(0) scaleX(.6); opacity: 0; } 70% { transform: scaleY(1.12) scaleX(1); opacity: 1; } 100% { transform: none; opacity: 1; } }
+/* 5 · CELEBRAR: explotan desde la nada y saltan como en una fiesta */
+.wl__s:nth-child(5) { --an: wl-fiesta; }
+@keyframes wl-fiesta { 0% { transform: scale(0) rotate(calc(var(--l) * 40deg - 90deg)); opacity: 0; } 55% { transform: scale(1.5) rotate(8deg); opacity: 1; } 75% { transform: scale(.9) rotate(-4deg); } 100% { transform: none; opacity: 1; } }
+.wl__s:nth-child(5) .wl__v i { animation-duration: .8s, 1s !important; }
+@keyframes wl-sigue5 { 0%, 100% { translate: 0 0; } 50% { translate: 0 -.12em; } }
+
+.welcome.calm .wl__v i { animation: none !important; transform: none; opacity: 1; }
+
+/* =========================================================
+   V6 · video de fondo (banner web) con efecto de desfase RGB, grano y viñeta; palabras más chicas en Inter liviana
+   ========================================================= */
+.wl__vid { position: absolute; inset: 0; width: 100%; height: 100%; object-fit: cover; z-index: 0; filter: url(#wl-rgb) saturate(1.25) contrast(1.08); }
+.wl__svg { position: absolute; width: 0; height: 0; }
+.welcome.calm .wl__vid { filter: saturate(1.15); }
+/* viñeta + líneas de barrido + grano */
+.welcome__stage::before { content: ""; position: absolute; inset: 0; z-index: 2; pointer-events: none; background: radial-gradient(ellipse at center, #00000000 45%, #000000B3 100%), repeating-linear-gradient(180deg, #00000026 0 1px, transparent 1px 3px); }
+.welcome__stage::after { content: ""; position: absolute; inset: -50%; z-index: 2; pointer-events: none; opacity: .16; background-image: radial-gradient(#fff 1px, transparent 1.4px); background-size: 3px 3px; animation: wl-grano .5s steps(4) infinite; }
+@keyframes wl-grano { 0% { transform: translate(0, 0); } 25% { transform: translate(-3%, 2%); } 50% { transform: translate(2%, -3%); } 75% { transform: translate(-2%, -1%); } 100% { transform: translate(3%, 3%); } }
+.welcome.calm .welcome__stage::after { animation: none; }
+
+/* las escenas dejan ver el video: cada verbo tiñe el video con su color y entra con un destello */
+.wl__s, .wl__s--rojo, .wl__s--turquesa, .wl__s--azul, .wl__s--amarillo, .wl__s--rosa { background: transparent; clip-path: none; z-index: 3; opacity: 0; }
+.wl__s::after { background: none; }
+.wl__s::before { content: ""; position: absolute; inset: 0; background: var(--c); mix-blend-mode: soft-light; opacity: .9; }
+.welcome.is-playing .wl__s { animation: wl-slot var(--scene) linear calc(.1s + var(--i) * var(--scene)) both, wl-golpe .5s steps(2, end) calc(.1s + var(--i) * var(--scene)) 1; }
+.welcome.is-playing .wl__s:last-of-type, .welcome.is-playing .wl__s:nth-child(5) { animation: wl-slot-last var(--scene) linear calc(.1s + var(--i) * var(--scene)) both, wl-golpe .5s steps(2, end) calc(.1s + var(--i) * var(--scene)) 1; }
+@keyframes wl-slot { 0% { opacity: 0; } 4% { opacity: 1; } 96% { opacity: 1; } 100% { opacity: 0; } }
+@keyframes wl-slot-last { 0% { opacity: 0; } 4% { opacity: 1; } 100% { opacity: 1; } }
+.wl__s::before { animation: none; }
+.welcome.calm .wl__s { opacity: 1; }
+.welcome.calm .wl__s:not(:nth-child(1)) { display: none; }
+.welcome.calm.is-playing .wl__s { animation: none !important; }
+
+/* palabra: más chica, en Inter liviana, con una línea de color debajo */
+.wl__v, .wl__s--turquesa .wl__v, .wl__s--amarillo .wl__v { font-weight: 200; font-size: clamp(2.2rem, min(8.2vw, 14svh), 8rem); letter-spacing: -.045em; line-height: 1; text-shadow: 0 2px 30px #00000099; position: relative; padding-bottom: .12em; }
+.wl__v::after { content: ""; position: absolute; left: 0; right: 0; bottom: 0; height: clamp(3px, .5vw, 6px); border-radius: 3px; background: var(--c); transform: scaleX(0); transform-origin: left; box-shadow: 0 0 24px var(--c); }
+.welcome.is-playing .wl__v::after { animation: wl-linea .8s var(--ease) calc(.1s + var(--i) * var(--scene) + .7s) forwards; }
+@keyframes wl-linea { to { transform: scaleX(1); } }
+.welcome.calm .wl__v::after { transform: scaleX(1); animation: none; }
+@media (max-width: 640px) { .wl__v { font-size: clamp(2rem, min(11vw, 12svh), 4.4rem); } }
+.wl__s::before { mix-blend-mode: normal; opacity: .34; }
+
+/* =========================================================
+   V7 · más tranquilo: video sin filtros y palabras que aparecen con un fundido suave
+   ========================================================= */
+.wl__vid, .welcome.calm .wl__vid { filter: none; }
+.welcome__stage::before, .welcome__stage::after { display: none; }
+.wl__s::before { display: none; }
+.welcome.is-playing .wl__s { animation: wl-slot var(--scene) linear calc(.1s + var(--i) * var(--scene)) both; }
+.welcome.is-playing .wl__s:nth-child(5) { animation: wl-slot-last var(--scene) linear calc(.1s + var(--i) * var(--scene)) both; }
+@keyframes wl-slot { 0% { opacity: 0; } 18% { opacity: 1; } 82% { opacity: 1; } 100% { opacity: 0; } }
+@keyframes wl-slot-last { 0% { opacity: 0; } 18% { opacity: 1; } 100% { opacity: 1; } }
+/* letras: fundido lento, una tras otra, sin movimiento ni giros */
+.welcome.is-playing .wl__s .wl__v i { animation: wl-suave 1s ease calc(.1s + var(--i) * var(--scene) + .15s + var(--l) * 90ms) both; animation-name: wl-suave; }
+.wl__v i { transform: none; }
+@keyframes wl-suave { from { opacity: 0; filter: blur(6px); } to { opacity: 1; filter: blur(0); } }
+.welcome.is-playing .wl__v::after { animation: wl-linea 1.2s ease calc(.1s + var(--i) * var(--scene) + .6s) forwards; }
+.wl__v, .wl__s--turquesa .wl__v, .wl__s--amarillo .wl__v { text-shadow: 0 2px 24px #000000B3; }
+
+/* pantalla final: la tipografía queda quieta; las piezas solo aparecen con un fundido */
+.welcome.is-final .wl__t span, .welcome.is-final .wl__t b { animation: none !important; translate: none; }
+.wl__fin > * { transform: none; filter: none; }
+@keyframes wl-pieza { to { opacity: 1; } }

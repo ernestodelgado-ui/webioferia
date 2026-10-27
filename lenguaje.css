@@ -47,7 +47,7 @@ body::after {
 .btn--ticket, .btn.is-soon { box-shadow: none; }
 .btn--stand { box-shadow: none; }
 .btn--dark { box-shadow: none; }
-.btn--outline:not(.btn--stand) { background: var(--white); }
+.btn--outline:not(.btn--stand) { background: var(--surface); }
 .gal__tab { border: 0; background: #ECE8DB; padding-inline: 22px; }
 .gal__tab[aria-selected="true"] { box-shadow: none; }
 .gal__tab:nth-child(odd) { rotate: -1deg; } .gal__tab:nth-child(even) { rotate: 1deg; }
@@ -60,13 +60,13 @@ body::after {
 /* ---------- 5. tarjetas: hoja de color detrás, como en la gráfica de campaña ---------- */
 /* apps, agenda y formulario: la tarjeta blanca va sobre una hoja inclinada del color del elemento */
 .app, .ag__panel, .contacto .form { isolation: isolate; background: transparent; box-shadow: none; border-radius: 0; }
-.app::before { z-index: -1; inset: 0; background: var(--white); border-radius: 6px 26px 4px 22px; }
+.app::before { z-index: -1; inset: 0; background: var(--surface); border-radius: 6px 26px 4px 22px; }
 .app::after, .ag__panel::after, .contacto .form::after {
   content: ""; position: absolute; inset: 0; z-index: -2; background: var(--c, var(--turquesa)); border-radius: 8px 24px 6px 22px;
   transform: rotate(-1.8deg) translate(8px, 7px); pointer-events: none;
 }
 .ag__panel { position: relative; }
-.ag__panel::before, .contacto .form::before { content: ""; position: absolute; inset: 0; z-index: -1; background: var(--white); border-radius: 6px 26px 4px 22px; }
+.ag__panel::before, .contacto .form::before { content: ""; position: absolute; inset: 0; z-index: -1; background: var(--surface); border-radius: 6px 26px 4px 22px; }
 .contacto .form { position: relative; --c: var(--amarillo); }
 .app:hover { box-shadow: none; transform: translateY(-4px); }
 
@@ -239,7 +239,7 @@ html.menos-movimiento .spec { animation: none; }
 .app:nth-child(1) .phone-mock__hint { color: var(--ink); }
 .phone-mock:hover .phone-mock__hint, .phone-mock:focus-visible .phone-mock__hint { opacity: 1; translate: -50% 0; }
 /* el QR pasa a ser una etiqueta pegada al celular */
-.app__qr { position: absolute; z-index: 4; left: -14px; bottom: -6px; width: 118px; padding: 8px 8px 6px; background: var(--white); rotate: -7deg; text-align: center; box-shadow: 0 16px 24px -16px #0B0B0B99; border-radius: 6px; }
+.app__qr { position: absolute; z-index: 4; left: -14px; bottom: -6px; width: 118px; padding: 8px 8px 6px; background: var(--surface); rotate: -7deg; text-align: center; box-shadow: 0 16px 24px -16px #0B0B0B99; border-radius: 6px; }
 .app__qr img { width: 100%; padding: 0; border: 0; border-radius: 0; box-shadow: none; }
 .app__qr figcaption { margin-top: 4px; font-size: .56rem; letter-spacing: .06em; line-height: 1.2; }
 .app:has(.phone-mock) { margin-top: 70px; }

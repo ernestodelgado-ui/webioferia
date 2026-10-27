@@ -1,0 +1,55 @@
+/* =========================================================
+   ÁREAS · diseño nuevo: título liviano con la última palabra en rosa, lista de categorías con números grandes y colores, mapa sin papel.
+   Oscuro = el diseño (fondo negro); claro = invertido (fondo blanco).
+   ========================================================= */
+section.areas { --ar-bg: #fff; --ar-fg: #0B0B0B; --ar-line: #0B0B0B4D; --ar-chip: #0B0B0B; --ar-chip-fg: #fff; background: var(--ar-bg); color: var(--ar-fg); font-family: "Inter", system-ui, sans-serif; padding-block: clamp(48px, 7vw, 100px); }
+html[data-tema="oscuro"] section.areas { --ar-bg: #000; --ar-fg: #fff; --ar-line: #FFFFFF73; --ar-chip: #fff; --ar-chip-fg: #0B0B0B; }
+section.areas::before, section.areas::after, section.areas > .tex { display: none !important; }
+section.areas .eyebrow { display: none; }
+
+/* título y bajada */
+section.areas .sec-head { max-width: none; margin-bottom: clamp(26px, 4vw, 56px); }
+section.areas .h2 { margin: 0; font-weight: 300; font-size: clamp(2.2rem, 6.4vw, 5.8rem); line-height: 1; letter-spacing: -.07em; color: var(--ar-fg); text-wrap: balance; }
+section.areas .h2 .em { font-style: normal; font-weight: 700; color: #FF00B2; background: none; text-decoration: none; }
+section.areas .h2 .em::before, section.areas .h2 .em::after { display: none !important; }
+section.areas .sec-head__text { max-width: 54em; margin: clamp(14px, 2vw, 26px) 0 0; font-size: clamp(.98rem, 1.45vw, 1.3rem); line-height: 1.3; letter-spacing: -.01em; color: var(--ar-fg); opacity: 1; }
+
+/* mapa */
+section.areas .areas__mapbtn { border-radius: var(--r); background: none; box-shadow: none; }
+section.areas .areas__img { border-radius: var(--r); box-shadow: none; }
+section.areas .areas__mapfoot { display: grid; gap: clamp(20px, 3vw, 40px); margin-top: 22px; }
+section.areas .areas__mapfoot .btn { justify-self: start; border-radius: 999px; clip-path: none; rotate: 0deg; background: var(--ar-chip); color: var(--ar-chip-fg); border: 0; padding: 0 28px; min-height: 52px; font-weight: 400; font-size: 1.1rem; box-shadow: none; }
+section.areas .areas__refs .mini { margin: 0 0 14px; font-size: 1rem; font-weight: 300; letter-spacing: .02em; text-transform: uppercase; color: var(--ar-fg); }
+section.areas .legend { display: flex; flex-wrap: wrap; gap: 16px 34px; }
+section.areas .legend__item { background: none; clip-path: none; padding: 0; box-shadow: none; display: inline-flex; align-items: center; gap: 8px; font-size: 1.02rem; font-weight: 700; letter-spacing: -.005em; text-transform: uppercase; color: var(--ar-fg); }
+section.areas .legend__dot { width: 32px; height: 15px; border-radius: 999px; background: var(--c); }
+
+/* lista de categorías */
+section.areas .areas__cats .mini { margin: 0 0 clamp(14px, 2vw, 24px); font-size: clamp(.8rem, 1.1vw, 1rem); font-weight: 700; letter-spacing: -.01em; text-transform: uppercase; color: var(--ar-fg); }
+section.areas .cats { border-top: 0; }
+section.areas .cats__item { display: grid; grid-template-columns: clamp(52px, 5.4vw, 76px) minmax(0, 1fr) auto; align-items: center; gap: 4px 10px; padding: 7px 0; border-bottom: 1px solid var(--ar-line); }
+section.areas .cats__n { width: auto; height: auto; border-radius: 0; background: none; box-shadow: none; font-size: clamp(2rem, 3.6vw, 3.3rem); font-weight: 500; line-height: 1; letter-spacing: -.04em; color: var(--c, var(--ar-fg)); justify-self: start; display: block; }
+section.areas .cats__n.bg-rojo { color: #FA3710; } section.areas .cats__n.bg-turquesa { color: #01DAC7; } section.areas .cats__n.bg-azul { color: #005BFC; }
+section.areas .cats__n.bg-amarillo { color: #FED108; } section.areas .cats__n.bg-rosa { color: #FF00B2; }
+section.areas .cats__name { font-size: clamp(.98rem, 1.4vw, 1.25rem); font-weight: 400; letter-spacing: -.01em; color: var(--ar-fg); }
+section.areas .cats__lugar { background: none; clip-path: none; padding: 0 6px 0 0; font-size: clamp(.92rem, 1.3vw, 1.2rem); font-weight: 400; letter-spacing: -.01em; color: var(--c); }
+section.areas .cats__lugar::before { display: none; }
+html[data-tema="oscuro"] section.areas .cats__lugar[style*="--azul"] { color: #4C8BFF; }
+html:not([data-tema="oscuro"]) section.areas .cats__lugar[style*="--amarillo"], html:not([data-tema="oscuro"]) section.areas .cats__n.bg-amarillo { color: #D9A900; }
+html:not([data-tema="oscuro"]) section.areas .cats__lugar[style*="--turquesa"], html:not([data-tema="oscuro"]) section.areas .cats__n.bg-turquesa { color: #00B3A3; }
+section.areas .cats__more { color: var(--ar-fg); }
+section.areas .areas__cats.af .cats__item { border-bottom-color: transparent; }
+section.areas .areas__cats.af .cats__item::after { background: var(--ar-line); }
+@media (max-width: 520px) { section.areas .cats__item { grid-template-columns: 52px 1fr; } }
+section.areas .h2 { font-size: clamp(2rem, 5.2vw, 5rem); }
+section.areas .h2::before, section.areas .h2::after, section.areas .h2 .em::before, section.areas .h2 .em::after { display: none !important; content: none !important; }
+section.areas .h2 .em { background-image: none !important; text-decoration: none !important; }
+@media (min-width: 760px) { section.areas .h2 { white-space: nowrap; } }
+
+section.areas { padding-top: clamp(24px, 3.5vw, 52px); margin-top: 0; }
+
+/* título en caja: el ajuste de tamaño lo hace areasfit.js; el punto cuelga al final */
+section.areas .h2 .af__t { display: inline-block; position: relative; white-space: nowrap; }
+section.areas .h2 .af__em { font-weight: 700; color: #FF00B2; }
+section.areas .h2 .af__p { position: absolute; left: 100%; top: 0; font-weight: 700; color: #FF00B2; }
+@media (max-width: 759px) { section.areas .h2 .af__t { white-space: normal; } section.areas .h2 .af__p { position: static; } }

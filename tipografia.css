@@ -1,0 +1,13 @@
+/* =========================================================
+   TIPOGRAFÍA · toda la página en Inter (reemplaza Kind Sans en menú, botones, formularios y el resto)
+   ========================================================= */
+:root { --font-sans: "Inter", system-ui, -apple-system, "Segoe UI", sans-serif; }
+html, body, button, input, select, textarea, .site-header, .site-header *, .btn, .header__nav a, .eyebrow, .h2, .lead { font-family: "Inter", system-ui, -apple-system, "Segoe UI", sans-serif; }
+
+/* sin bordes rasgados entre secciones: cortes rectos y limpios */
+.is-torn, .hero.is-torn, .site-footer.is-torn, .contacto__grid.is-torn, .videos.is-torn { clip-path: none !important; -webkit-clip-path: none !important; }
+body { background: #fff; }
+html[data-tema="oscuro"] body { background: #000; }
+
+/* la forma rosa del contacto se desvanece en vez de cortarse de golpe contra la sección siguiente */
+.ct__forma { -webkit-mask-image: linear-gradient(180deg, transparent 0, #000 14%, #000 82%, transparent 100%); mask-image: linear-gradient(180deg, transparent 0, #000 14%, #000 82%, transparent 100%); }
