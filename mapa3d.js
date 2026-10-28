@@ -272,7 +272,7 @@
       const b = document.createElement("button"); b.type = "button"; b.className = "m3__pin" + (d.p.big ? " is-big" : ""); b.style.setProperty("--c", CSS[d.p.c]);
       b.innerHTML = `<i></i><span>${esc(d.p.n)}</span>`; b.setAttribute("aria-label", d.p.n); b.addEventListener("click", () => select(d)); pinBox.appendChild(b); return b;
     });
-    window.M3 = { THREE, scene, camera, renderer, LG, hAt, wx, wz, UW, UH, PINS, pinsData, animObjs, img, t, CSS, COLOR, ov, coarse: matchMedia("(pointer: coarse)").matches || innerWidth < 720 };
+    window.M3 = { cam, THREE, scene, camera, renderer, LG, hAt, wx, wz, UW, UH, PINS, pinsData, animObjs, img, t, CSS, COLOR, ov, coarse: matchMedia("(pointer: coarse)").matches || innerWidth < 720 };
     document.dispatchEvent(new CustomEvent("m3-built"));
     onResize();
   }

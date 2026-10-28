@@ -15,6 +15,9 @@
     /* ---------- alturas suaves para la vista real ---------- */
     const NX = t.NX, NZ = t.NZ, HR = new Float32Array(t.H.length);
     for (let i = 0; i < HR.length; i++) HR[i] = t.H[i] < 0 ? t.H[i] * 0.16 : t.H[i] * 0.28;
+    // plaza de tierra frente al escenario (el escenario mira hacia el norte y ahí solo había agua)
+    const PL = { x: wx(815), z: wz(438) - 15, rx: 19, rz: 12 };
+    for (let zz = 0; zz <= NZ; zz++) for (let xx = 0; xx <= NX; xx++) { const q = ((((xx / NX - .5) * UW) - PL.x) / PL.rx) ** 2 + ((((zz / NZ - .5) * UH) - PL.z) / PL.rz) ** 2; if (q < 1.25) { const i = zz * (NX + 1) + xx, k = Math.max(0, Math.min(1, (1.25 - q) / .45)); HR[i] = HR[i] * (1 - k) + .06 * k; } }
     const hR = (x, z) => { const u = (x / UW + .5) * NX, v = (z / UH + .5) * NZ, x0 = Math.max(0, Math.min(NX - 1, Math.floor(u))), z0 = Math.max(0, Math.min(NZ - 1, Math.floor(v))), fx = u - x0, fz = v - z0, I = (a, b) => HR[b * (NX + 1) + a];
       return I(x0, z0) * (1 - fx) * (1 - fz) + I(x0 + 1, z0) * fx * (1 - fz) + I(x0, z0 + 1) * (1 - fx) * fz + I(x0 + 1, z0 + 1) * fx * fz; };
 
@@ -30,6 +33,7 @@
       else if (mn > 222) { R = 238; G = 228; B = 205; }
       else if (g > r + 8 && g > b + 8) { const k = Math.max(0, Math.min(1, (lum - .28) / .35)); c = lum < .3 ? 3 : 2; R = mix(88, 192, k); G = mix(136, 212, k); B = mix(62, 104, k); }
       else { R = 236; G = 226; B = 200; }
+      { const qx = ((x / SW - .5) * UW - PL.x) / PL.rx, qz = ((y / SH - .5) * UH - PL.z) / PL.rz; if (qx * qx + qz * qz < 1) { R = 238; G = 228; B = 205; c = 0; } }
       cls[i] = c; out.data[i * 4] = R + n; out.data[i * 4 + 1] = G + n; out.data[i * 4 + 2] = B + n * .6; out.data[i * 4 + 3] = 255;
     }
     sg.putImageData(out, 0, 0);
@@ -57,8 +61,9 @@
     const std = (c, r = .75, o = {}) => new THREE.MeshStandardMaterial(Object.assign({ color: c, roughness: r, metalness: 0 }, o));
     const WOOD = 0xe0b574, WOODL = 0xf1d4a0, WOODD = 0xc48c4e;
     const V = (x, y, z) => new THREE.Vector3(x, y, z);
-    const artTex = (file, bgc) => { const c = document.createElement("canvas"); c.width = c.height = 512; const x = c.getContext("2d"); x.fillStyle = bgc; x.fillRect(0, 0, 512, 512); const tx = new THREE.CanvasTexture(c); tx.encoding = THREE.sRGBEncoding; tx.wrapS = tx.wrapT = THREE.RepeatWrapping; tx.anisotropy = 4; const im = new Image(); im.onload = () => { const k = Math.max(512 / im.width, 512 / im.height); x.drawImage(im, (512 - im.width * k) / 2, (512 - im.height * k) / 2, im.width * k, im.height * k); tx.needsUpdate = true; }; im.src = "assets/graficas/" + file; return tx; };
-    const artCol = artTex("bioferia-collage.webp", "#01DAC7"), artAma = artTex("patron-amarillo.webp", "#fed108");
+    const TELA = [];
+    const artTex = (file, bgc, crop) => { const c = document.createElement("canvas"); c.width = c.height = 512; const x = c.getContext("2d"); x.fillStyle = bgc; x.fillRect(0, 0, 512, 512); const tx = new THREE.CanvasTexture(c); tx.encoding = THREE.sRGBEncoding; tx.wrapS = tx.wrapT = THREE.RepeatWrapping; tx.anisotropy = 4; const im = new Image(); im.onload = () => { if (crop) { x.drawImage(im, crop[0] * im.width, crop[1] * im.height, crop[2] * im.width, crop[3] * im.height, 0, 0, 512, 512); } else { const k = Math.max(512 / im.width, 512 / im.height); x.drawImage(im, (512 - im.width * k) / 2, (512 - im.height * k) / 2, im.width * k, im.height * k); } tx.needsUpdate = true; }; im.src = (file.indexOf("/") > 0 ? "" : "assets/graficas/") + file; return tx; };
+    const telaTunel = artTex("assets/telas/tela-tunel.jpg", "#dffcff"), artCol = artTex("bioferia-collage.webp", "#01DAC7"), artAma = artTex("patron-amarillo.webp", "#fed108");
     const mesh = (g, m, x = 0, y = 0, z = 0) => { const o = new THREE.Mesh(g, m); o.position.set(x, y, z); return o; };
     const bx = (w, h, d, c, x, y, z, r = .8) => mesh(new THREE.BoxGeometry(w, h, d), std(c, r), x, y + h / 2, z);
     const tube = (pts, r, c, seg = 28, closed = false, map = null) => mesh(new THREE.TubeGeometry(new THREE.CatmullRomCurve3(pts, closed), seg, r, 7, closed), std(map ? 0xffffff : c, .65, map ? { map } : {}));
@@ -82,33 +87,38 @@
         const s = 1 - i * .05, z = -i * 2.7, a = new THREE.Group();
         const arch = tube([V(-6.4 * s, 0, 0), V(-6.4 * s, 3 * s, 0), ...arc(6.4 * s, Math.PI - .35, .35, 16, 1, 1.05).map((p) => V(p.x, p.y + 3 * s, 0)), V(6.4 * s, 3 * s, 0), V(6.4 * s, 0, 0)], .3 * s, i % 2 ? WOODL : WOOD, 48); arch.scale.z = 2.6; a.add(arch); a.position.z = z; g.add(a);
         if (i < n - 1) {
-          const mat = i % 3 === 2 ? std(0xffffff, .85, { side: THREE.DoubleSide, map: artTex("criatura-nautilo.webp", "#4C8BFF") }) : std(0xffffff, .85, { side: THREE.DoubleSide, map: artCol });
-          const sh = mesh(new THREE.CylinderGeometry(6.2 * s, 6.2 * s, 2.65, 18, 1, true, 0, Math.PI), mat, 0, 3 * s, z - 1.35); sh.rotation.set(Math.PI / 2, 0, 0); g.add(sh);
-          [-1, 1].forEach((q) => { const w = mesh(new THREE.PlaneGeometry(2.65, 3 * s), mat, q * 6.2 * s, 1.5 * s, z - 1.35); w.rotation.y = Math.PI / 2; g.add(w); });
+          const mat = std(0xffffff, .85, { side: THREE.DoubleSide, map: telaTunel });
+          const geoT = new THREE.BufferGeometry(), pos = [], uv = [], ix = [], R = 6.2 * s, H = 3 * s, NW = 5, NA = 28, pts = [];
+          for (let k = 0; k <= NW; k++) pts.push([-R, H * k / NW]);
+          for (let k = 1; k < NA; k++) { const an = Math.PI - Math.PI * k / NA; pts.push([Math.cos(an) * R, H + Math.sin(an) * R]); }
+          for (let k = NW; k >= 0; k--) pts.push([R, H * k / NW]);
+          [0, 1].forEach((rowI) => pts.forEach((p, k) => { pos.push(p[0], p[1], z - rowI * 2.7); uv.push(k / (pts.length - 1), 1 - (i + rowI) / (n - 1)); }));
+          for (let k = 0; k < pts.length - 1; k++) { const q = k, w2 = k + pts.length; ix.push(q, w2, q + 1, q + 1, w2, w2 + 1); }
+          geoT.setAttribute("position", new THREE.Float32BufferAttribute(pos, 3)); geoT.setAttribute("uv", new THREE.Float32BufferAttribute(uv, 2)); geoT.setIndex(ix); geoT.computeVertexNormals();
+          g.add(mesh(geoT, mat));
         }
         if (i < 4) for (let k = 0; k < 7; k++) { const an = Math.PI - .42 - k * (Math.PI - .84) / 6, w = pinwheel((1.5 - i * .24) * s); w.position.set(Math.cos(an) * 6.9 * s, 3 * s + Math.sin(an) * 7.1 * s, z + .55); g.add(w); wheels.push(w); }
         if (i < 8) [-1, 1].forEach((q) => { g.add(bx(1.6 * s, .9, 2.5, WOODL, q * 8 * s, 0, z - 1.35)); g.add(plant(q * 8 * s, .9, z - .8, 1.4 * s)); g.add(plant(q * 8 * s + .3, .9, z - 1.9, 1.1 * s, 0x62b04c)); });
       }
-      g.add(bx(8.2, 2, .45, WOODL, 0, 7.9, .35)); g.add(sign("BIOFERIA", 7.6, 1.7, "#ecc98f", "#ffffff", "700 150px Inter, Arial, sans-serif", 0, 8.9, .6));
-      [-1, 1].forEach((q) => { g.add(bx(.1, 9, .1, 0xdddddd, q * 10, 0, 1.5, .5)); g.add(cloth(2, 6, 0xffffff, .3, q * 10 + 1.1, 5.4, 1.5, 0, 0, { map: artCol })); });
+      [-1, 1].forEach((q) => { g.add(bx(.1, 9, .1, 0xdddddd, q * 10, 0, 1.5, .5)); g.add(cloth(2, 6, 0xffffff, .3, q * 10 + 1.1, 5.4, 1.5, 0, 0, { get map() { return TELA[q > 0 ? 2 : 4]; } })); });
       animObjs.push((tm) => wheels.forEach((w, i) => { w.rotation.z = tm * (.9 + (i % 3) * .3) * (i % 2 ? 1 : -1); })); return g;
     }
     function escenario() {
       const g = new THREE.Group();
-      g.add(tube(arc(8.2, Math.PI, 0, 26).map((p) => V(p.x, p.y + .8, 0)), .55, WOODL, 44));
-      g.add(tube(arc(7, Math.PI, 0, 26).map((p) => V(p.x, p.y + .8, -.5)), .38, WOOD, 40));
+      g.add(tube(arc(8.2, Math.PI, 0, 26).map((p) => V(p.x, p.y + .8, 1.7)), .55, WOODL, 44));
+      g.add(tube(arc(7, Math.PI, 0, 26).map((p) => V(p.x, p.y + .8, 1.2)), .38, WOOD, 40));
       const wall = sign("activemos\nel cambio", 13, 6.6, "#2f6f34", "#ffffff", "300 96px Inter, Arial, sans-serif", 0, 3.6, -1.2); g.add(wall);
       const cols = [0xFF00B2, 0x01DAC7, 0xFA3710, 0xffffff, 0x4C8BFF, 0xFED108];
-      for (let k = 0; k < 11; k++) { const a = Math.PI * (.06 + k * .088), sp = mesh(new THREE.ConeGeometry(.7, 6.4, 5), std(WOODL, .7), Math.cos(a) * 9.4, .8 + Math.sin(a) * 9.2, 0); sp.rotation.z = a - Math.PI / 2 + .12; g.add(sp);
-        g.add(cloth(1.8, 5.4, cols[k % 6], .5, Math.cos(a) * 8.1, 1 + Math.sin(a) * 7.9, .3, -.1, 0, { opacity: .95, transparent: true, map: k % 2 ? artCol : null })); }
-      for (let k = 0; k < 9; k++) g.add(cloth(.9, 5, cols[(k + 2) % 6], .4, -6 + k * 1.5, 5.4, .5, 0, 0, { opacity: .95, transparent: true }));
-      const sunD = new THREE.Group(); sunD.position.set(0, 9, .2); sunD.add(mesh(new THREE.CylinderGeometry(2, 2, .7, 28), std(WOODD, .6), 0, 0, 0).rotateX(Math.PI / 2));
+      for (let k = 0; k < 11; k++) { const a = Math.PI * (.06 + k * .088), sp = mesh(new THREE.ConeGeometry(.7, 6.4, 5), std(WOODL, .7), Math.cos(a) * 9.4, .8 + Math.sin(a) * 9.2, 1.7); sp.rotation.z = a - Math.PI / 2 + .12; g.add(sp);
+        g.add(cloth(1.8, 5.4, cols[k % 6], .5, Math.cos(a) * 8.1, 1 + Math.sin(a) * 7.9, -.3, -.1, 0, { opacity: .95, transparent: true, get map() { return TELA[k % 8]; } })); }
+      for (let k = 0; k < 9; k++) g.add(cloth(.9, 5, cols[(k + 2) % 6], .4, -6 + k * 1.5, 5.4, -.1, 0, 0, { opacity: .95, transparent: true }));
+      const sunD = new THREE.Group(); sunD.position.set(0, 9, 1.9); sunD.add(mesh(new THREE.CylinderGeometry(2, 2, .7, 28), std(WOODD, .6), 0, 0, 0).rotateX(Math.PI / 2));
       for (let k = 0; k < 22; k++) { const a = k * Math.PI / 11, p = mesh(new THREE.ConeGeometry(.28, 1.7, 4), std(WOODL), Math.cos(a) * 2.5, Math.sin(a) * 2.5, 0); p.rotation.z = a - Math.PI / 2; sunD.add(p); } g.add(sunD); animObjs.push((tm) => { sunD.rotation.z = tm * .18; });
       g.add(bx(15, .6, 4.4, WOOD, 0, 0, 2.2)); g.add(bx(9, .6, 1.8, WOODL, 0, .6, 4.9)); g.add(bx(5, .6, 1.4, WOODL, 0, 1.2, 6.2));
-      [-7.6, 7.6].forEach((x) => { g.add(bx(.12, 8, .12, 0xdddddd, x * 1.55, 0, 7, .5)); g.add(cloth(2.6, 8.4, x < 0 ? 0x01DAC7 : 0xFF00B2, .3, x * 1.55 + 1.2, 4.6, 7, 0, 0, { map: artCol })); });
+      [-7.6, 7.6].forEach((x) => { g.add(bx(.12, 8, .12, 0xdddddd, x * 1.55, 0, 7, .5)); g.add(cloth(2.6, 8.4, 0xffffff, .3, x * 1.55 + 1.2, 4.6, 7, 0, 0, { get map() { return TELA[x < 0 ? 1 : 3]; } })); });
       for (let k = -3; k <= 3; k++) g.add(plant(k * 2, 1.2, 4.2, .9));
       [-1, 1].forEach((q) => { for (let h = 0; h < 3; h++) g.add(bx(1.5, 1.4, 1.3, 0x1a1a1e, q * 6.6, .6 + h * 1.4, 1.2, .5)); });
-      for (let k = 0; k < 7; k++) { const a = Math.PI * (.12 + k * .13); g.add(ribbon([V(Math.cos(a) * 7.4, .6 + Math.sin(a) * 7.4, 0.4), V(Math.cos(a) * 6.2, -.6 + Math.sin(a) * 6.2, .9), V(Math.cos(a) * 5.6, -2.4 + Math.sin(a) * 5.6, .5)], 1.2, 0xffffff, 12, artCol)); }
+      for (let k = 0; k < 7; k++) { const a = Math.PI * (.12 + k * .13); g.add(ribbon([V(Math.cos(a) * 7.4, .6 + Math.sin(a) * 7.4, -.2), V(Math.cos(a) * 6.2, -.6 + Math.sin(a) * 6.2, .2), V(Math.cos(a) * 5.6, -2.4 + Math.sin(a) * 5.6, -.1)], 1.2, 0xffffff, 12, artCol)); }
       for (let k = 0; k < 6; k++) g.add(mesh(new THREE.CylinderGeometry(.18, .18, .45, 8), std(0x222, .5), -5 + k * 2, 8.2 - Math.abs(k - 2.5) * .6, 1));
       return g;
     }
@@ -117,7 +127,8 @@
       g.add(mesh(new THREE.CylinderGeometry(6.4, 6.4, .34, 40), std(WOODL, .6), 0, .17, 0));
       [[1, 1], [-1, 1], [1, -1], [-1, -1]].forEach(([sx, sy]) => {
         const w = new THREE.Group(), rx = sy > 0 ? 7.4 : 6.2, ry = sy > 0 ? 2.6 : 2.1, sh = new THREE.Shape(); sh.absellipse(rx, 0, rx, ry, 0, Math.PI * 2, false);
-        w.add(mesh(new THREE.ShapeGeometry(sh, 36), std(0xbff2ff, .3, { transparent: true, opacity: .9, side: THREE.DoubleSide, map: artTex("bioferia-collage.webp", "#44c9f0") })));
+        const wg = new THREE.ShapeGeometry(sh, 36), wp = wg.attributes.position, wu = []; for (let q = 0; q < wp.count; q++) wu.push(wp.getY(q) / (2 * ry) + .5, wp.getX(q) / (2 * rx)); wg.setAttribute("uv", new THREE.Float32BufferAttribute(wu, 2));
+        w.add(mesh(wg, std(0xffffff, .3, { transparent: true, opacity: .9, side: THREE.DoubleSide, map: telaTunel })));
         const pts = []; for (let i = 0; i < 44; i++) { const a = i / 44 * Math.PI * 2; pts.push(V(Math.cos(a) * rx + rx, Math.sin(a) * ry, 0)); } const rim = tube(pts, .17, WOODL, 48, true); rim.scale.z = 1.6; w.add(rim);
         for (let k = 0; k < 5; k++) { const v = mesh(new THREE.BoxGeometry(rx * 1.7, .05, .05), std(0xe9d4a8), rx, 0, 0); v.rotation.z = (k - 2) * .22; w.add(v); }
         w.scale.x = sx; w.position.set(0, 7.2 + (sy > 0 ? .7 : -.3), sy > 0 ? 0 : .5); w.rotation.z = sy * .1 * sx; g.add(w); alas.push(w);
@@ -171,10 +182,10 @@
       const g = new THREE.Group();
       [[-5, -3.4], [5, -3.4], [-5, 3.4], [5, 3.4]].forEach(([x, z]) => g.add(bx(.7, 5.6, .7, WOODD, x, 0, z)));
       g.add(bx(10.9, .5, .5, WOOD, 0, 5.4, -3.4)); g.add(bx(10.9, .5, .5, WOOD, 0, 5.4, 3.4)); g.add(bx(.5, .5, 7.2, WOOD, -5, 5.4, 0)); g.add(bx(.5, .5, 7.2, WOOD, 5, 5.4, 0)); g.add(bx(.4, .4, 7.2, WOOD, 0, 5.6, 0)); g.add(bx(10.9, .4, .4, WOOD, 0, 5.6, 0));
-      const roof = mesh(new THREE.PlaneGeometry(10.4, 7, 8, 6), std(0xffffff, .8, { side: THREE.DoubleSide, map: artAma, emissive: 0x3a3000 }), 0, 5.55, 0); roof.rotation.x = -Math.PI / 2; g.add(roof);
+      const roof = mesh(new THREE.PlaneGeometry(10.4, 7, 8, 6), std(0xffffff, .8, { side: THREE.DoubleSide, map: artTex("assets/telas/charlas-techo.jpg", "#efd44f", [0, .12, 1, .47]), emissive: 0x4a3f00 }), 0, 5.55, 0); roof.rotation.x = -Math.PI / 2; g.add(roof);
       [[-5, -3.4, 1, 1], [5, -3.4, -1, 1], [-5, 3.4, 1, -1], [5, 3.4, -1, -1]].forEach(([x, z, sx, sz]) => { g.add(tube([V(x, 2.6, z), V(x + sx * .9, 3.9, z + sz * .1), V(x + sx * 2.2, 5.2, z + sz * .1)], .18, WOOD, 16)); g.add(tube([V(x, 2.6, z), V(x + sx * .1, 3.9, z + sz * .9), V(x + sx * .1, 5.2, z + sz * 2.2)], .18, WOOD, 16)); });
       for (let r2 = 0; r2 < 5; r2++) { g.add(bx(3.4, .75, .7, WOOD, -2.2, 0, 1.4 - r2 * 1.1 + .6)); g.add(bx(3.4, .75, .7, WOOD, 2.2, 0, 1.4 - r2 * 1.1 + .6)); }
-      g.add(bx(6.4, .35, 1.6, WOODL, 0, 0, -2.7)); g.add(bx(6.4, .35, 1.1, WOODL, 0, .35, -2.9)); g.add(mesh(new THREE.PlaneGeometry(6.6, 3.8), std(0xffffff, .9, { map: artAma, emissive: 0x3a3000 }), 0, 3.0, -3.3));
+      g.add(bx(6.4, .35, 1.6, WOODL, 0, 0, -2.7)); g.add(bx(6.4, .35, 1.1, WOODL, 0, .35, -2.9)); g.add(mesh(new THREE.PlaneGeometry(6.6, 3.8), std(0xffffff, .9, { side: THREE.DoubleSide, map: artTex("assets/telas/charlas-fondo.jpg", "#f7f6f1", [0, .27, 1, .4]), emissive: 0x222018 }), 0, 3.0, -3.3));
       for (let i = 0; i < 16; i++) { const x = -4.8 + (i % 8) * 1.4 + (i < 8 ? 0 : .5), z = i < 8 ? -3.3 : 3.3; const vine = mesh(new THREE.ConeGeometry(.16, 1.5 + (i % 3) * .5, 5), std(0x4e9c40, .9), x, 4.6 - (i % 3) * .3, z + (i < 8 ? .2 : -.2)); vine.rotation.x = Math.PI; g.add(vine); }
       [[-5.4, 3.9], [5.4, 3.9], [-5.4, -3.9], [5.4, -3.9]].forEach(([x, z]) => { g.add(bx(1.5, 1, 1.2, WOODL, x, 0, z)); g.add(plant(x, 1, z, 1.3, 0x3f8e3a)); g.add(plant(x + .3, 1, z - .2, 1, 0x62b04c)); });
       return g;
@@ -198,8 +209,12 @@
       for (let b = 0; b < 5; b++) g.add(mesh(new THREE.CylinderGeometry(.06, .06, .28, 6), std(0xe9d3b0, .8), .5 + b * .35, 1.54, 1.4));
       return g;
     }
-    const STAND = { rojo: [0x16110f, 0xFA3710, artTex("criatura-flores.webp", "#16110f")], rosa: [0xffffff, 0xFF00B2, artTex("organismo-rosa.png", "#ffffff")], azul: [0x1f4fe0, 0x7fb8ff, artTex("criatura-nautilo.webp", "#1f4fe0")], amarillo: [0xfff3a8, 0xFED108, artAma], turquesa: [0x01DAC7, 0xFA3710, artTex("criatura-libelula.png", "#01DAC7")] };
-    const kioskSpots = []; const stands = (lista, k, s = .95) => lista.forEach(([px, py, rot]) => { kioskSpots.push([px, py, rot || 0, s]); put(kiosk(STAND[k][0], STAND[k][1], STAND[k][2]), px, py, rot || 0, s); });
+    const TS = (n, c) => artTex("assets/telas/stand-" + n + ".jpg", "#222", c);
+    const STAND0 = { rojo: [0x16110f, 0xFA3710, artTex("criatura-flores.webp", "#16110f")], rosa: [0xffffff, 0xFF00B2, artTex("organismo-rosa.png", "#ffffff")], azul: [0x1f4fe0, 0x7fb8ff, artTex("criatura-nautilo.webp", "#1f4fe0")], amarillo: [0xfff3a8, 0xFED108, artAma], turquesa: [0x01DAC7, 0xFA3710, artTex("criatura-libelula.png", "#01DAC7")] };
+    const kioskSpots = []; STAND0.rojo[2] = TS("fuego"); STAND0.rosa[2] = TS("corazon"); STAND0.azul[2] = TS("agua"); STAND0.amarillo[2] = TS("tierra"); STAND0.turquesa[2] = TS("aire");
+    const STAND = STAND0;
+    TELA.push(TS("fuego", [0, 0, .7, .45]), TS("corazon", [.0, .1, .8, .6]), TS("agua", [.1, .05, .8, .6]), TS("tierra", [0, .45, .9, .55]), TS("aire", [.1, .55, .9, .45]), TS("fuego", [.3, .35, .7, .6]), TS("agua", [.2, .3, .75, .6]), TS("corazon", [0, .35, .8, .6]));
+    const stands = (lista, k, s = .95) => lista.forEach(([px, py, rot]) => { kioskSpots.push([px, py, rot || 0, s]); put(kiosk(STAND[k][0], STAND[k][1], STAND[k][2]), px, py, rot || 0, s); });
 
     put(ingreso(), 1700, 862, -0.12, 1); put(escenario(), 815, 438, 0, 1.05); put(charlas(), 800, 228, 0, 1.4);
     put(descanso(0), 1040, 240, .2, .8); put(descanso(2), 1420, 722, -.3, .85); put(descanso(4), 1020, 985, .1, .8);
@@ -241,7 +256,7 @@
     /* ---------- gente: camina, charla, se sienta y baila ---------- */
     const palT = [0xFA3710, 0x01DAC7, 0x4C8BFF, 0xFED108, 0xFF00B2, 0xf4f1ea, 0x25252b, 0x6bb04a, 0xe8a0b4, 0x1f3a8a, 0xff8a3a], palP = [0x2b3350, 0x3b3b3b, 0xb9a78a, 0x1f2a44, 0x55616f, 0x6b4f3a], palS = [0xf2c9a0, 0xdcaa82, 0xb77b55, 0x7a4a30, 0xe9b98f];
     const P = [];
-    const addP = (o) => { const i = P.length; P.push(Object.assign({ s: .95 + hash(i, 1) * .22, ph: hash(i, 2) * 6.28, kind: "stand", rot: hash(i, 3) * 6.28, lift: 0 }, o)); };
+    const addP = (o) => { if (o.x !== undefined && o.y === undefined && hR(o.x, o.z) < -.3) return; const i = P.length; P.push(Object.assign({ s: .95 + hash(i, 1) * .22, ph: hash(i, 2) * 6.28, kind: "stand", rot: hash(i, 3) * 6.28, lift: 0 }, o)); };
     const wl = (px, py, rot, s, lx, lz) => { const gx = wx(px), gz = wz(py); return [gx + (lx * Math.cos(rot) + lz * Math.sin(rot)) * s, gz + (-lx * Math.sin(rot) + lz * Math.cos(rot)) * s]; };
     const mkPath = (pts) => { const w = pts.map((p) => (p.length === 2 && Math.abs(p[0]) > 400 ? [wx(p[0]), wz(p[1])] : p)), L = [0]; for (let i = 1; i < w.length; i++) L.push(L[i - 1] + Math.hypot(w[i][0] - w[i - 1][0], w[i][1] - w[i - 1][1])); return { w, L, len: L[L.length - 1] }; };
     const along = (pa, d, loop) => { if (loop) d = ((d % pa.len) + pa.len) % pa.len; else { const c = ((d % (2 * pa.len)) + 2 * pa.len) % (2 * pa.len); d = c < pa.len ? c : 2 * pa.len - c; }
