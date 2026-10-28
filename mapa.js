@@ -11,7 +11,7 @@
   const CLARO = C.areas.mapa.src, OSCURO = CLARO;                         // el mapa es el mismo en claro y oscuro
 
   /* ---------- versión oscura / clara ---------- */
-  const apply = () => {
+  const apply = () => { return;
     const dark = root.dataset.tema === "oscuro";
     document.querySelectorAll(".areas__img, .map-dialog__img").forEach((im) => {
       const want = dark ? OSCURO : CLARO;
