@@ -131,14 +131,14 @@
         w.add(mesh(wg, std(0xffffff, .3, { transparent: true, opacity: .9, side: THREE.DoubleSide, map: telaTunel })));
         const pts = []; for (let i = 0; i < 44; i++) { const a = i / 44 * Math.PI * 2; pts.push(V(Math.cos(a) * rx + rx, Math.sin(a) * ry, 0)); } const rim = tube(pts, .17, WOODL, 48, true); rim.scale.z = 1.6; w.add(rim);
         for (let k = 0; k < 5; k++) { const v = mesh(new THREE.BoxGeometry(rx * 1.7, .05, .05), std(0xe9d4a8), rx, 0, 0); v.rotation.z = (k - 2) * .22; w.add(v); }
-        w.scale.x = sx; w.position.set(0, 7.2 + (sy > 0 ? .7 : -.3), sy > 0 ? 0 : .5); w.rotation.z = sy * .1 * sx; g.add(w); alas.push(w);
+        w.scale.x = sx; w.position.set(0, 6.9 + (sy > 0 ? .5 : .15), sy > 0 ? -.9 : 1.1); w.rotation.set(sy > 0 ? -1.12 : -1.28, sx * (sy > 0 ? .1 : -.1), 0); g.add(w); alas.push(w);
       });
       [-1, 1].forEach((q) => { [0, .5].forEach((o) => { const t2 = tube([V(q * (4.4 + o), .3, o * .6), V(q * (4.1 + o), 3.6, o * .6), V(q * (1.7 + o * .3), 6.6, o * .3)], .34, o ? WOOD : WOODL, 22); t2.scale.z = 2.2; g.add(t2); }); });
       g.add(bx(1.9, 1.3, 1.3, 0xb8bcc2, 0, 6.2, 0)); const swg = new THREE.Group(); swg.position.set(0, 6.2, 0); [-1, 1].forEach((x) => swg.add(mesh(new THREE.CylinderGeometry(.03, .03, 4.8, 5), std(0xdddddd), x, -2.4, 0))); swg.add(bx(2.4, .2, .95, WOOD, 0, -5, 0)); g.add(swg);
       g.add(sign("activemos\nel cambio", 7.4, 4.6, "#2f6f34", "#ffffff", "300 96px Inter, Arial, sans-serif", 0, 3.4, -2.6));
       for (let k = 0; k < 9; k++) g.add(plant(-3.6 + k * .9, 0, -2.4, 1.3, k % 2 ? 0x3f9a3d : 0x56b84e));
       [-5.2, 5.2].forEach((x) => { g.add(bx(3, 1.2, 2.1, 0xd8d4cc, x, 0, 2.2)); g.add(bx(2.9, 1, .07, WOOD, x, .1, 3.3)); for (let k = 0; k < 5; k++) g.add(plant(x - 1.1 + k * .55, 1.2, 2.2, 1.5)); });
-      animObjs.push((tm) => { swg.rotation.x = Math.sin(tm * 1.1) * .2; alas.forEach((w, i) => { w.rotation.y = Math.sin(tm * 1.4 + i) * .08; }); }); return g;
+      animObjs.push((tm) => { swg.rotation.x = Math.sin(tm * 1.1) * .2; alas.forEach((w, i) => { w.rotation.z = Math.sin(tm * 1.4 + i) * .04; }); }); return g;
     }
     function fenceTex() {
       const c = document.createElement("canvas"); c.width = 1024; c.height = 300; const x = c.getContext("2d");
@@ -216,7 +216,7 @@
     TELA.push(TS("fuego", [0, 0, .7, .45]), TS("corazon", [.0, .1, .8, .6]), TS("agua", [.1, .05, .8, .6]), TS("tierra", [0, .45, .9, .55]), TS("aire", [.1, .55, .9, .45]), TS("fuego", [.3, .35, .7, .6]), TS("agua", [.2, .3, .75, .6]), TS("corazon", [0, .35, .8, .6]));
     const stands = (lista, k, s = .95) => lista.forEach(([px, py, rot]) => { kioskSpots.push([px, py, rot || 0, s]); put(kiosk(STAND[k][0], STAND[k][1], STAND[k][2]), px, py, rot || 0, s); });
 
-    put(ingreso(), 1700, 862, -0.12, 1); put(escenario(), 815, 438, 0, 1.05); put(charlas(), 800, 228, 0, 1.4);
+    put(ingreso(), 1700, 862, -0.12, .62); put(escenario(), 815, 438, 0, 1.05); put(charlas(), 800, 228, 0, 1.4);
     put(descanso(0), 1040, 240, .2, .8); put(descanso(2), 1420, 722, -.3, .85); put(descanso(4), 1020, 985, .1, .8);
     put(instagram(), 1792, 525, 1.1, .9); put(instagram(), 740, 935, 0, .9); put(instagram(), 1530, 985, 0, .9);
     put(banos(), 215, 205, -0.95, .9); put(banos(), 1322, 972, 0, .9); put(gastro(), 352, 132, -.3, 1.25); put(informes(), 1568, 800, 0, .85);
