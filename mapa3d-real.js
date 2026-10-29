@@ -286,12 +286,12 @@
     [[215, 205, -.95, .9], [1322, 972, 0, .9]].forEach(([px, py, rot, s]) => { for (let k = 0; k < 4; k++) { const [x, z] = wl(px, py, rot, s, -4.5 + k * 1.1, 3.6); addP({ x, z, rot: rot + Math.PI }); } });
     { const [vx, vz] = wl(352, 132, -.3, 1.25, 0, -1); addP({ x: vx, z: vz, rot: 0 }); const c = wl(352, 132, -.3, 1.25, 0, 3.4); chat(c[0], c[1], 5, 1.6); }
     { const c = wl(1665, 450, 0, 1.25, 0, 4); chat(c[0], c[1], 3, .9); } { const c = wl(380, 592, 0, 1.3, 0, 3.4); chat(c[0], c[1], 3, .9); } { const c = wl(152, 345, .6, 1.25, 0, 4); chat(c[0], c[1], 2, .8); }
-    const nP = P.length, partG = [new THREE.BoxGeometry(.34, .8, .22), new THREE.CylinderGeometry(.2, .25, .75, 8), new THREE.SphereGeometry(.19, 8, 6)];
+    P.length = 0; const nP = 0, partG = [new THREE.BoxGeometry(.34, .8, .22), new THREE.CylinderGeometry(.2, .25, .75, 8), new THREE.SphereGeometry(.19, 8, 6)];
     const parts = partG.map((geo) => { const m = new THREE.InstancedMesh(geo, std(0xffffff, .85), nP); m.castShadow = !coarse; m.frustumCulled = false; RG.add(m); return m; });
     const cc = new THREE.Color(); P.forEach((p, i) => { cc.set(palP[Math.floor(hash(i, 21) * palP.length)]); parts[0].setColorAt(i, cc); cc.set(palT[Math.floor(hash(i, 22) * palT.length)]); parts[1].setColorAt(i, cc); cc.set(palS[Math.floor(hash(i, 23) * palS.length)]); parts[2].setColorAt(i, cc);
       if (p.x !== undefined && p.y === undefined) p.y = hR(p.x, p.z); });
     const dum = new THREE.Object3D(); let lastT = 0;
-    const poblar = (tm) => { lastT = tm;
+    let gente = false; const poblar = (tm) => { if (!gente) return; lastT = tm;
       for (let i = 0; i < nP; i++) { const p = P[i], S = p.s; let x = p.x, z = p.z, y = p.y, rot = p.rot, bob = 0, sw = 0, legS = 1;
         if (p.kind === "walk") { const q = along(p.path, p.d0 + p.v * (tm + 1.8 * Math.sin(tm * .35 + p.ph)), p.loop); x = q[0]; z = q[1]; rot = q[2]; const ph = tm * p.v * 2.6 + p.ph; bob = Math.abs(Math.sin(ph)) * .08; sw = Math.sin(ph) * .06; y = hR(x, z); }
         else if (p.kind === "sit") { legS = .55; y += p.lift; sw = Math.sin(tm * .7 + p.ph) * .02; }
@@ -304,7 +304,7 @@
         dum.position.set(x, y + bob + lh + .375 * S, z); dum.scale.set(S, S, S); dum.updateMatrix(); parts[1].setMatrixAt(i, dum.matrix);
         dum.position.set(x, y + bob + lh + .75 * S + .2 * S, z); dum.updateMatrix(); parts[2].setMatrixAt(i, dum.matrix); }
       parts.forEach((m) => { m.instanceMatrix.needsUpdate = true; }); };
-    animObjs.push(poblar); poblar(0);
+    animObjs.push(poblar); parts.forEach((m) => { m.visible = false; });
 
     /* ---------- día y noche: sigue el botón sol/luna de la página ---------- */
     scene.remove(LG);
@@ -324,6 +324,7 @@
     btn.innerHTML = '<svg class="sol" viewBox="0 0 24 24" width="20" height="20" aria-hidden="true"><circle cx="12" cy="12" r="4.2" fill="currentColor"/><g stroke="currentColor" stroke-width="2" stroke-linecap="round"><path d="M12 2.5v2.4M12 19.1v2.4M2.5 12h2.4M19.1 12h2.4M5.3 5.3l1.7 1.7M17 17l1.7 1.7M18.7 5.3L17 7M7 17l-1.7 1.7"/></g></svg><svg class="luna" viewBox="0 0 24 24" width="20" height="20" aria-hidden="true"><path d="M20 14.5A8.5 8.5 0 1 1 9.5 4a7 7 0 0 0 10.5 10.5z" fill="currentColor"/></svg>';
     ov.querySelector(".m3__top").insertBefore(btn, ov.querySelector(".m3__close"));
     btn.addEventListener("click", () => { const b = document.querySelector(".tema-btn"); if (b) b.click(); });
+
     function aplicar() {
       const noche = document.documentElement.dataset.tema === "oscuro";
       scene.background = noche ? nightTex : skyTex; scene.fog = noche ? nightFog : dayFog; renderer.setClearColor(noche ? 0x16224f : 0xf5eedb, 1);

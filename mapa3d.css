@@ -88,3 +88,10 @@ html.menos-movimiento .m3 * { transition: none !important; }
 .m3.is-night .m3__pin i { box-shadow: 0 0 0 4px #FFFFFF40, 0 0 16px 4px var(--c); }
 .m3.is-night .m3__hint, .m3.is-night .m3__ttl, .m3.is-night .m3__close { background: #0B122699; }
 .m3__info { background: linear-gradient(160deg, #0B1226F2, #0B1226DB) !important; }
+
+/* botón Personas (mostrar / ocultar) */
+.m3__gente { pointer-events: auto; height: 40px; display: inline-flex; align-items: center; gap: 8px; padding: 0 16px; border-radius: 999px; cursor: pointer; color: #fff; background: #0B122659; border: 1px solid #FFFFFF59; -webkit-backdrop-filter: blur(12px); backdrop-filter: blur(12px); font: 400 .9rem "Inter", system-ui, sans-serif; margin-left: auto; margin-right: 10px; }
+.m3__gente + .m3__tema { margin-left: 0; }
+.m3__gente[aria-pressed="true"] { background: #FF00B2; border-color: #fff; }
+.m3__gente:focus-visible { outline: 3px solid #fff; outline-offset: 3px; }
+@media (max-width: 640px) { .m3__gente span { display: none; } .m3__gente { padding: 0 11px; } }
