@@ -19,7 +19,7 @@
   }
   function abrir() {
     const noche = document.documentElement.dataset.tema === "oscuro";
-    fr.src = "universo3d.html?" + (noche ? "negro" : "blanco") + "#" + estacion();
+    fr.src = "universo3d.html?" + (noche ? "negro" : "blanco") + "#g";
     wrap.classList.add("on"); wrap.setAttribute("aria-hidden", "false"); document.documentElement.classList.add("m3d-lock");
   }
   function cerrar() {
