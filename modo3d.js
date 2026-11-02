@@ -17,17 +17,23 @@
     Object.keys(MAPA).forEach((id) => { const el = document.getElementById(id); if (!el) return; const r = el.getBoundingClientRect(); const d = r.top <= mid && r.bottom > mid ? 0 : Math.min(Math.abs(r.top - mid), Math.abs(r.bottom - mid)); if (d < dist) { dist = d; mejor = MAPA[id]; } });
     return mejor;
   }
+  const VOLVER = [null, "festival", "edicion", "vuelve", "catalizadores", "identidad", "areas", "espacios", "galeria", "videos", "agenda", "impacto", "app", "contacto", "contacto"];
+  let yAntes = 0;
   function abrir() {
+    yAntes = scrollY;
     const noche = document.documentElement.dataset.tema === "oscuro";
     fr.src = "universo3d.html?" + (noche ? "negro" : "blanco") + "#g" + estacion();
     wrap.classList.add("on"); wrap.setAttribute("aria-hidden", "false"); document.documentElement.classList.add("m3d-lock");
   }
-  function cerrar() {
+  function cerrar(est) {
     wrap.classList.remove("on"); wrap.setAttribute("aria-hidden", "true"); document.documentElement.classList.remove("m3d-lock");
+    // vuelve a la sección del 3D en la que estaba la persona; si estaba en el universo, al mismo lugar de antes
+    const el = est && document.getElementById(VOLVER[est]);
+    if (el) { const h = document.querySelector("header"); const off = h ? h.getBoundingClientRect().height : 0; scrollTo({ top: Math.max(0, el.getBoundingClientRect().top + scrollY - off), behavior: "instant" }); } else scrollTo({ top: yAntes, behavior: "instant" });
     setTimeout(() => { if (!wrap.classList.contains("on")) fr.src = "about:blank"; }, 600);
     btn.focus({ preventScroll: true });
   }
   btn.addEventListener("click", abrir);
-  addEventListener("message", (e) => { if (e.data === "cerrar3d") cerrar(); });
+  addEventListener("message", (e) => { const d = e.data; if (d === "cerrar3d") cerrar(); else if (d && d.t === "cerrar3d") cerrar(d.e); });
   addEventListener("keydown", (e) => { if (e.key === "Escape" && wrap.classList.contains("on")) cerrar(); });
 })();

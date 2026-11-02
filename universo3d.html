@@ -78,7 +78,7 @@ const B=window.BIOFERIA,TH=window.THREE;
 let INK='#0b0b0b',INV='#fff';const inkd=()=>INK==='#fff'?'#ffffffd9':'#0b0b0bd9';const COL={fuego:'#FA3710',aire:'#01DAC7',agua:'#005BFC',tierra:'#FED108',rosa:'#FF0099'};
 const CN={rojo:COL.fuego,turquesa:COL.aire,azul:COL.agua,amarillo:COL.tierra,rosa:COL.rosa};
 const WEB='index.html';
-function back2d(){if(parent!==window)parent.postMessage('cerrar3d','*');else location.href='index.html'}
+function back2d(){if(parent!==window)parent.postMessage({t:'cerrar3d',e:cur>=0?cur+1:0},'*');else location.href='index.html'}
 
 const loadImg=u=>new Promise(r=>{const i=new Image();i.crossOrigin='anonymous';i.onload=()=>r(i);i.onerror=()=>r(null);i.src=u});
 const mkc=(w,h)=>{const c=document.createElement('canvas');c.width=Math.max(2,Math.round(w));c.height=Math.max(2,Math.round(h));return c};
@@ -219,7 +219,14 @@ station('campana','Un festival que se mira <b>como se siente</b>','Cada elemento
   return(t,eT)=>{const q=Math.max(0,eT);ring.rotation.y=.28*q+2.6*(1-Math.exp(-q*1.1));const e=eOut(clamp(q/1.4));holder.scale.setScalar(.55+.45*e);holder.visible=q>0}
 },{d:13,h:.5});
 
-station('areas','Descubrí las 11 áreas <b>temáticas</b>','El mapa 3D del Hipódromo, para recorrerlo, y todo lo que vive en cada lugar.',async g=>{return null},{d:12});
+station('areas','Descubrí las 11 áreas <b>temáticas</b>','El mapa 3D del Hipódromo, para recorrerlo, y todo lo que vive en cada lugar.',async g=>{
+  const A=(m,o)=>{g.add(m);return reg(m,o)};
+  const mapa=imgCard('assets/mapa/mapa3d-poster.jpg',7.4,4.16,{r:.04,px:1300});mapa.position.set(-2.7,.1,0);A(mapa,{k:'wipe',d:0,len:1.2});
+  const cats=B.areas.categorias,cw=4.3,ch=5.1,lista=textPlane(cw,ch,880,(x,w,h)=>{const u=w/cw;x.fillStyle='#fff';rr(x,0,0,w,h,44);x.fill();x.textBaseline='middle';x.fillStyle='#0b0b0b';x.font='700 26px Inter';x.letterSpacing='3px';x.fillText(cats.length+' CATEGORÍAS',.3*u,70);
+    cats.forEach((c,i)=>{const y=150+i*(h-190)/cats.length,col=CN[c.color]==='#FED108'?'#d4a900':CN[c.color];x.fillStyle=col;x.font='500 40px Inter';x.letterSpacing='-2px';x.fillText(pad2(i+1),.3*u,y);x.fillStyle='#0b0b0b';x.font='400 34px Inter';x.letterSpacing='-1px';x.fillText(c.n,.3*u+84,y);x.fillStyle=col;x.font='500 26px Inter';x.textAlign='right';x.fillText(c.lugar,w-.3*u,y);x.textAlign='left'})},{fixed:true,shadow:true});
+  lista.position.set(3.9,0,.02);A(lista,{k:'up',dist:1.6,d:.5,len:1});
+  return(t,eT)=>{g.visible=!(mp.classList.contains('on')&&T-mpOnT>.9)}
+},{d:19});
 
 station('espacios','Así se activa el <b>recorrido</b>','Cinco espacios pensados para llegar, encontrarse, orientarse, escuchar y hacer una pausa.',async g=>{
   const E=[['ingreso','Entrada','La bienvenida al festival.'],['instagram','Espacio instagrameable','Un lugar para la foto y para compartir.'],['informes','Informes','Orientación y consultas para visitantes.'],['escenario','Escenario','Música y contenidos en vivo.'],['descanso','Lugar de descanso','Bancos y sombra para hacer una pausa.']];
@@ -312,7 +319,7 @@ function rig(){const v=baseP.clone().sub(baseL),len=v.length(),r=len*u.zm;let th
 const cap=document.getElementById('cap'),capN=cap.querySelector('.n'),capH=cap.querySelector('h1'),capP=cap.querySelector('p'),nextB=document.getElementById('next'),prevB=document.getElementById('prev'),dots=document.getElementById('dots'),mp=document.getElementById('mp');
 for(let i=0;i<N;i++){const d=document.createElement('i');d.onclick=()=>go(i);dots.appendChild(d)}
 const wordify=h=>h.replace(/(<[^>]+>)|([^<\s]+)/g,(m,t,w)=>t?t:`<span class="w">${w}</span>`);
-let mpBuilt=false,mpTimer=0;
+let mpBuilt=false,mpTimer=0,mpOnT=1e9;
 function buildMp(){const a=B.areas,t=mp.querySelector('.mp__txt'),cc=c=>CN[c]==='#FED108'?'#b89400':CN[c];
   t.innerHTML=`<p>${a.texto}</p><h3>${a.categorias.length} categorías · el color marca dónde se vive</h3><ol>${a.categorias.map((c,i)=>`<li style="transition-delay:${i*70+500}ms"><b style="color:${cc(c.color)}">${pad2(i+1)}</b><span>${c.n}</span><em style="color:${cc(c.color)}">${c.lugar}</em></li>`).join('')}</ol><h3>Referencias del mapa</h3><div class="leg">${a.referencias.map(r=>`<i style="--c:${CN[r.color]}">${r.t}</i>`).join('')}</div>`;
   const fr=mp.querySelector('iframe');fr.onload=()=>{try{fr.contentDocument.documentElement.dataset.tema=dark?'oscuro':'claro'}catch(e){}};fr.src='universo3d-mapa.html';mpBuilt=true}
@@ -321,7 +328,7 @@ function showKP(i){catSel=catSel===i?-1:i}
 function hideKP(){catSel=-1}
 function go(i){hideKP();if(i<-2)i=-2;if(i>=0)focus=-1;if(i>=N)i=N-1;cur=i;const t=targetFor(i);baseP.copy(t.p);baseL.copy(t.l);Object.assign(ug,{x:0,y:0,z:0,th:0,ph:0,zm:1});
   if(i>=0)ST[i].t0=T+.6;
-  clearTimeout(mpTimer);mp.classList.remove('on');if(i===iAreas){if(!mpBuilt)buildMp();mpTimer=setTimeout(()=>mp.classList.add('on'),1500)}
+  clearTimeout(mpTimer);mp.classList.remove('on');mpOnT=1e9;if(i===iAreas){if(!mpBuilt)buildMp();mpTimer=setTimeout(()=>{mp.classList.add('on');mpOnT=T},1500)}
   cap.classList.remove('in');setTimeout(()=>{let h,p,n='';if(i===-1){h='La web de <b>Bioferia</b>';p='Un recorrido por cada sección de la página, en el orden en que se vive. Podés moverte libremente por el espacio.'}
     else if(i===-2){h='El <b>universo</b> de Bioferia';p=focus>=0?'Estabas en "'+ST[focus].title.replace(/<[^>]+>/g,'')+'". Entrá ahí o tocá cualquier etiqueta para ir a otra sección.':'Las 14 secciones de la web, flotando alrededor de la semilla. Arrastrá para girar y tocá una etiqueta para entrar.'}
     else{n=pad2(i+1)+' / '+pad2(N);h=ST[i].title;p=ST[i].text}
