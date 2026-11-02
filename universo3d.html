@@ -305,7 +305,7 @@ async function buildAll(){await Promise.all(['300','400','500','600','700','900'
 
 let cur=-1;const cam={p:new V3(0,2.4,16),l:new V3(0,0,0),tp:new V3(0,2.4,16),tl:new V3(0,0,0)};camera.position.copy(cam.p);
 const u={x:0,y:0,z:0,th:0,ph:0,zm:1},ug={x:0,y:0,z:0,th:0,ph:0,zm:1};let baseP=new V3(0,2.4,16),baseL=new V3(0,0,0),fov=48;
-function targetFor(i){if(i===-1)return{p:new V3(0,2.4,16),l:new V3(0,0,0)};if(i===-2)return{p:new V3(0,70,56),l:new V3(0,-4,0)};
+function targetFor(i){if(i===-1)return{p:new V3(0,2.4,16),l:new V3(0,0,0)};if(i===-2)return{p:new V3(0,12,28),l:new V3(0,6.5,0)};
   const s=ST[i],inw=new V3(-s.pos.x,0,-s.pos.z).normalize();return{p:s.pos.clone().addScaledVector(inw,s.d*.74).add(new V3(0,s.h+.6+1.5,0)),l:s.pos.clone().add(new V3(0,s.h*.3+1.5,0))}}
 function rig(){const v=baseP.clone().sub(baseL),len=v.length(),r=len*u.zm;let th=Math.atan2(v.x,v.z)+u.th,ph=clamp(Math.acos(clamp(v.y/len,-1,1))+u.ph,.12,2.95);
   const l=baseL.clone().add(new V3(u.x,u.y,u.z)),p=l.clone().add(new V3(Math.sin(ph)*Math.sin(th),Math.cos(ph),Math.sin(ph)*Math.cos(th)).multiplyScalar(r));cam.tp.copy(p);cam.tl.copy(l)}
@@ -323,12 +323,12 @@ function go(i){hideKP();if(i<-2)i=-2;if(i>=N)i=N-1;cur=i;const t=targetFor(i);ba
   if(i>=0)ST[i].t0=T+.6;
   clearTimeout(mpTimer);mp.classList.remove('on');if(i===iAreas){if(!mpBuilt)buildMp();mpTimer=setTimeout(()=>mp.classList.add('on'),1500)}
   cap.classList.remove('in');setTimeout(()=>{let h,p,n='';if(i===-1){h='La web de <b>Bioferia</b>';p='Un recorrido por cada sección de la página, en el orden en que se vive. Podés moverte libremente por el espacio.'}
-    else if(i===-2){h='Vista <b>general</b>';p='Las 14 secciones de la web. Tocá una etiqueta para ir.'}
+    else if(i===-2){h='El <b>universo</b> de Bioferia';p='Las 14 secciones de la web, flotando alrededor de la semilla. Arrastrá para girar y tocá una etiqueta para entrar.'}
     else{n=pad2(i+1)+' / '+pad2(N);h=ST[i].title;p=ST[i].text}
     capN.textContent=n;capH.innerHTML=wordify(h);capP.textContent=p;capH.querySelectorAll('.w').forEach((w,k)=>w.style.transitionDelay=(k*80)+'ms');requestAnimationFrame(()=>requestAnimationFrame(()=>cap.classList.add('in')))},260);
-  nextB.textContent=i===-1?'Empezar →':(i===N-1?'Vista general':'Siguiente →');prevB.style.visibility=i===-1?'hidden':'visible';
+  nextB.textContent=(i===-1||i===-2)?'Empezar recorrido →':(i===N-1?'Ver el universo':'Siguiente →');prevB.style.visibility=(i===-1||i===-2)?'hidden':'visible';
   [...dots.children].forEach((d,k)=>d.classList.toggle('a',k===i));history.replaceState(null,'',i>=0?'#'+(i+1):location.pathname)}
-function step(d){if(cur===-2)return go(d>0?-1:N-1);if(cur===N-1&&d>0)return go(-2);go(cur+d)}
+function step(d){if(cur===-2)return go(d>0?0:N-1);if(cur===N-1&&d>0)return go(-2);go(cur+d)}
 nextB.onclick=()=>step(1);prevB.onclick=()=>step(-1);
 
 const keys={};let mx=0,my=0,drag=null;
@@ -372,10 +372,11 @@ function frame(){requestAnimationFrame(frame);const dt=Math.min(.05,clock.getDel
   const tf=48+clamp(dist*.16,0,15);fov+=(tf-fov)*(1-Math.exp(-dt*4));if(Math.abs(camera.fov-fov)>.05){camera.fov=fov;camera.updateProjectionMatrix()}
   updateSeed(T,dt);if(lens.m){lens.amt+=(lens.tgt-lens.amt)*(1-Math.exp(-dt*9));lens.m.material.uniforms.uAmt.value=lens.amt}
   {const a=dust.pt.geometry.attributes.position;for(let i=0;i<dust.N;i++){a.array[i*3]+=dust.v[i][0]*dt;a.array[i*3+1]+=dust.v[i][1]*dt;a.array[i*3+2]+=dust.v[i][2]*dt;if(Math.abs(a.array[i*3+1])>32)dust.v[i][1]*=-1}a.needsUpdate=true}
-  labels.forEach(l=>{const d=camera.position.distanceTo(l.position),o=clamp((d-26)/22);l.material.opacity=o*(l.userData.i===cur?0:1);l.visible=l.material.opacity>.02});
+  if(cur<0&&!drag&&!Object.keys(keys).length)ug.th-=dt*.05;
+  labels.forEach(l=>{const d=camera.position.distanceTo(l.position),o=clamp((d-26)/22),w=clamp(d*.2,7.4,13);l.scale.set(w,w*.172,1);l.material.opacity=o*(l.userData.i===cur?0:1);l.visible=l.material.opacity>.02});
   ST.forEach(s=>{const eT=s.t0===undefined?99:T-s.t0;if(s.t0!==undefined&&eT<14)applyParts(s,eT);if(s.upd)s.upd(T,eT)});
   renderer.render(scene,camera)}
-buildAll().then(()=>{try{const q=location.search;if(q.includes('negro')||(!q.includes('blanco')&&localStorage.getItem('bio-fondo')==='n'))setFondo(true)}catch(e){}setFondo(dark);document.getElementById('load').classList.add('off');const h=parseInt(location.hash.slice(1));go(isNaN(h)?-1:Math.min(N,Math.max(1,h))-1);rig();cam.p.copy(cam.tp);cam.l.copy(cam.tl);frame()});
+buildAll().then(()=>{try{const q=location.search;if(q.includes('negro')||(!q.includes('blanco')&&localStorage.getItem('bio-fondo')==='n'))setFondo(true)}catch(e){}setFondo(dark);document.getElementById('load').classList.add('off');const h=parseInt(location.hash.slice(1));go(isNaN(h)?-2:Math.min(N,Math.max(1,h))-1);rig();cam.p.copy(cam.tp);cam.l.copy(cam.tl);frame()});
 window.__go=go;window.__ST=ST;
 </script>
 </body>
