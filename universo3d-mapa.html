@@ -1,0 +1,13 @@
+<!doctype html>
+<html lang="es"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Mapa 3D</title>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@200;300;400;500;600;700&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="mapa3d.css">
+<style>html,body{margin:0;height:100%;background:#dfeef3;overflow:hidden}.areas__mapfoot{display:none}.m3__close,.m3__tema{display:none!important}.m3__ttl{display:none}.m3__hint{bottom:12px}</style></head>
+<body>
+<div class="areas__mapfoot"></div>
+<script src="content.js"></script>
+<script src="mapa3d.js"></script>
+<script src="mapa3d-real.js"></script>
+<script>document.documentElement.dataset.tema='claro';addEventListener('load',()=>{const b=document.querySelector('.m3-open');if(b)b.click()});</script>
+</body></html>

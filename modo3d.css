@@ -1,0 +1,14 @@
+/* =========================================================
+   MODO 3D · botón flotante + pantalla completa con el universo de la web
+   Para quitarlo: borrar este archivo, modo3d.js, universo3d*.html y sus 2 líneas en index.html.
+   ========================================================= */
+.m3d-btn { position: fixed; z-index: 3200; left: max(18px, env(safe-area-inset-left, 0px)); bottom: max(18px, env(safe-area-inset-bottom, 0px)); display: inline-flex; align-items: center; gap: .55em; min-height: 52px; padding: 0 26px; border-radius: 999px; cursor: pointer; border: 1.5px solid #FFFFFFD9; color: #fff; font: 500 1.05rem "Inter", system-ui, sans-serif; letter-spacing: -.01em; text-shadow: 0 1px 10px #8A005E99;
+  background: radial-gradient(circle at 30% 22%, #FFFFFFB3 0%, #FF4DC4B3 30%, #FF00B2D9 70%, #D6008FE6 100%); box-shadow: 0 18px 44px -14px #FF00B2, inset 0 2px 0 #FFFFFFB3, inset 0 -10px 20px #B3007A55; transition: transform .2s, filter .2s; }
+.m3d-btn:hover { transform: translateY(-2px); filter: brightness(1.1); }
+.m3d-btn:focus-visible { outline: 3px solid #fff; outline-offset: 3px; }
+.m3d-btn b { font-weight: 700; letter-spacing: .02em; }
+.m3d { position: fixed; inset: 0; z-index: 4000; background: #eceef0; opacity: 0; pointer-events: none; transition: opacity .5s ease; }
+.m3d.on { opacity: 1; pointer-events: auto; }
+.m3d iframe { position: absolute; inset: 0; width: 100%; height: 100%; border: 0; display: block; }
+html.m3d-lock { overflow: hidden; }
+@media (max-width: 640px) { .m3d-btn { min-height: 46px; padding: 0 20px; font-size: .95rem; } }
